@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface UserRepo : JpaRepository<User, Long> {
 
-//  Login
+//  Pronalazi u bazi korisnika prema zadatom username
     fun findByUsername(username: String) : User?
 
 

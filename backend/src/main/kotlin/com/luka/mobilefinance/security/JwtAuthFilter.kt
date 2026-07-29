@@ -28,23 +28,26 @@ class JwtAuthFilter(private val jwtService: JwtService) : OncePerRequestFilter()
 
         val authHeader = request.getHeader("Authorization")
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            response.status = HttpStatus.UNAUTHORIZED.value()
-            response.contentType = MediaType.APPLICATION_JSON_VALUE
-            response.writer.write("""{"error":"Missing or invalid Authorization header"}""")
+            sendUnauthorized(response, "Missing or invalid Authorization header")
             return
         }
 
         val token = authHeader.substring(7)
         val username = jwtService.extractUsername(token)
         if (username == null) {
-            response.status = HttpStatus.UNAUTHORIZED.value()
-            response.contentType = MediaType.APPLICATION_JSON_VALUE
-            response.writer.write("""{"error":"Invalid or expired token"}""")
+            sendUnauthorized(response, "Invalid or expired token")
             return
         }
 
         // Expose autentifikovani username controllerima kroz request attribute
         request.setAttribute("username", username)
         filterChain.doFilter(request, response)
+    }
+
+    // Smanjuje ponavljanje - helper
+    private fun sendUnauthorized(response: HttpServletResponse, message: String) {
+        response.status = HttpStatus.UNAUTHORIZED.value()
+        response.contentType = MediaType.APPLICATION_JSON_VALUE
+        response.writer.write("""{"error":"$message"}""")
     }
 }

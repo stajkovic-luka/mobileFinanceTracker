@@ -1,3 +1,4 @@
+-- Inicijalna strukture baze - 3 tabele: users, goals i deposits medjusobno povezane
 CREATE TABLE users (
     id            BIGINT       NOT NULL AUTO_INCREMENT,
     email         VARCHAR(150) NOT NULL,
