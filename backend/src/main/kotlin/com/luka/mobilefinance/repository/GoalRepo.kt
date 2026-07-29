@@ -10,4 +10,7 @@ interface GoalRepo : JpaRepository<Goal, Long> {
 
     // Vraca ciljeve samo jednog korisnika, od najnovijeg ka najstarijem
     fun findAllByUserIdOrderByCreatedAtDesc(userId: Long): List<Goal>
+
+    // Nalazi cilj samo ako pripada prosledjenom korisniku.
+    fun findByIdAndUserId(id: Long, userId: Long): Goal?
 }

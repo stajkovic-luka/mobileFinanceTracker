@@ -2,6 +2,7 @@ package com.luka.mobilefinance.service
 
 import com.luka.mobilefinance.dto.CreateGoalRequest
 import com.luka.mobilefinance.dto.GoalResponse
+import com.luka.mobilefinance.dto.UpdateGoalRequest
 import com.luka.mobilefinance.entity.Goal
 import com.luka.mobilefinance.entity.Status
 import com.luka.mobilefinance.repository.GoalRepo
@@ -46,6 +47,38 @@ class GoalService(
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User no longer exists")
 
         return goalRepo.findAllByUserIdOrderByCreatedAtDesc(user.id!!).map(::toResponse)
+    }
+
+    // Vraca jedan cilj samo ako pripada prijavljenom korisniku.
+    fun getGoal(username: String, goalId: Long): GoalResponse {
+        val user = userRepo.findByUsername(username)
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User no longer exists")
+
+        val goal = goalRepo.findByIdAndUserId(goalId, user.id!!)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Goal not found")
+
+        return toResponse(goal)
+    }
+
+    // Menja podatke cilja samo ako cilj pripada prijavljenom korisniku.
+    fun updateGoal(username: String, goalId: Long, request: UpdateGoalRequest): GoalResponse {
+        val user = userRepo.findByUsername(username)
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User no longer exists")
+
+        val goal = goalRepo.findByIdAndUserId(goalId, user.id!!)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Goal not found")
+
+        goal.name = request.name
+        goal.targetAmount = request.targetAmount
+        goal.updatedAt = Date()
+        if(request.deadline != null) {
+            goal.deadline = request.deadline
+        }
+
+        // Cilj je zavrsen ako je trenutni iznos jednak ili veci od novog ciljanog iznosa.
+        goal.status = if (goal.currentAmount >= goal.targetAmount) Status.COMPLETED else Status.ACTIVE
+
+        return toResponse(goalRepo.save(goal))
     }
 
     // Pretvara entitet iz baze u odgovor koji saljemo mobilnoj aplikaciji.
