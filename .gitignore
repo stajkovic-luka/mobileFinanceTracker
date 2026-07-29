@@ -5,3 +5,9 @@ build/
 .idea/
 *.iml
 local.properties
+
+# Internal branding & raw assets (SQRL)
+/branding/
+
+# Secrets (never commit)
+.env

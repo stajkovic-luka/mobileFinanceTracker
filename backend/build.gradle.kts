@@ -27,6 +27,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.flywaydb:flyway-mysql")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
     implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("org.springframework.security:spring-security-crypto")
     runtimeOnly("com.mysql:mysql-connector-j")
@@ -47,6 +50,21 @@ allOpen {
     annotation("jakarta.persistence.Embeddable")
 }
 
+// Ucitaj backend/.env (gitignored) i prosledi ga bootRun i test taskovima
+val dotEnv = mutableMapOf<String, String>()
+file(".env").takeIf { it.exists() }?.readLines()?.forEach { line ->
+    val l = line.trim()
+    if (l.isNotEmpty() && !l.startsWith("#") && "=" in l) {
+        val (k, v) = l.split("=", limit = 2)
+        dotEnv[k.trim()] = v.trim().trim('"')
+    }
+}
+
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+    environment(dotEnv)
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
+    environment(dotEnv)
 }

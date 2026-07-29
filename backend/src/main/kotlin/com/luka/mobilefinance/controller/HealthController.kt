@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class HealthController {
 
-//    TEST
+//    Health provera
     @GetMapping("/health")
     fun health(): Map<String, String> = mapOf("status" to "UP")
 }
