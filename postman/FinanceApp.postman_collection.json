@@ -33,6 +33,21 @@
       "item": [
         {
           "name": "Register user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.environment.set(\"token\", pm.response.json().token);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -118,6 +133,21 @@
       "item": [
         {
           "name": "Add goal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.environment.set(\"goalId\", pm.response.json().id);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -268,6 +298,21 @@
       "item": [
         {
           "name": "Create deposit",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.environment.set(\"depositId\", pm.response.json().id);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -284,7 +329,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"amount\": 2000.00,\n  \"note\": \"Ovo je neka testna uplata\"\n}"
+              "raw": "{\n  \"amount\": 49000.00,\n  \"note\": \"Stigla plata\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/goals/{{goalId}}/deposits",
@@ -325,6 +370,153 @@
                 "goals",
                 "{{goalId}}",
                 "deposits"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit deposit",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 3000.00,\n  \"note\": \"Izmena iznosa\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/goals/{{goalId}}/deposits/{{depositId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "goals",
+                "{{goalId}}",
+                "deposits",
+                "{{depositId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete deposit",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 2500.00,\n  \"note\": \"Izmena iznosa\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/goals/{{goalId}}/deposits/{{depositId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "goals",
+                "{{goalId}}",
+                "deposits",
+                "{{depositId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Create report",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "function formatDate(date) {",
+                  "    const year = date.getFullYear();",
+                  "    const month = String(date.getMonth() + 1).padStart(2, \"0\");",
+                  "    const day = String(date.getDate()).padStart(2, \"0\");",
+                  "",
+                  "    return `${year}-${month}-${day}`;",
+                  "}",
+                  "",
+                  "const to = new Date();",
+                  "const from = new Date();",
+                  "from.setDate(to.getDate() - 30);",
+                  "",
+                  "pm.environment.set(\"reportFrom\", formatDate(from));",
+                  "pm.environment.set(\"reportTo\", formatDate(to));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reports/deposits?from={{reportFrom}}&to={{reportTo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reports",
+                "deposits"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{reportFrom}}",
+                  "description": "datum od"
+                },
+                {
+                  "key": "to",
+                  "value": "{{reportTo}}",
+                  "description": "datum do"
+                }
               ]
             }
           },
