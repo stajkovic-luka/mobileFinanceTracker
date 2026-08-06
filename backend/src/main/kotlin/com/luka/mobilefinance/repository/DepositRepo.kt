@@ -10,4 +10,7 @@ interface DepositRepo : JpaRepository<Deposit, Long> {
 
     // Vraca uplate jednog cilja od najstarije ka najnovijoj.
     fun findAllByGoalIdOrderByCreatedAtAsc(goalId: Long): List<Deposit>
+
+    // Nalazi uplatu samo ako pripada prosledjenom cilju.
+    fun findByIdAndGoalId(id: Long, goalId: Long): Deposit?
 }

@@ -2,14 +2,19 @@ package com.luka.mobilefinance.controller
 
 import com.luka.mobilefinance.dto.CreateDepositRequest
 import com.luka.mobilefinance.dto.DepositResponse
+import com.luka.mobilefinance.dto.UpdateDepositRequest
 import com.luka.mobilefinance.service.DepositService
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -31,4 +36,24 @@ class DepositController(private val depositService: DepositService) {
         @RequestAttribute("username") username: String,
         @PathVariable goalId: Long
     ): List<DepositResponse> = depositService.getDeposits(username, goalId)
+
+    // Menja iznos i/ili napomenu jedne uplate izabranog cilja.
+    @PatchMapping("/{depositId}")
+    fun updateDeposit(
+        @RequestAttribute("username") username: String,
+        @PathVariable goalId: Long,
+        @PathVariable depositId: Long,
+        @Valid @RequestBody request: UpdateDepositRequest
+    ): DepositResponse = depositService.updateDeposit(username, goalId, depositId, request)
+
+    // Brise jednu uplatu izabranog cilja.
+    @DeleteMapping("/{depositId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteDeposit(
+        @RequestAttribute("username") username: String,
+        @PathVariable goalId: Long,
+        @PathVariable depositId: Long
+    ) {
+        depositService.deleteDeposit(username, goalId, depositId)
+    }
 }

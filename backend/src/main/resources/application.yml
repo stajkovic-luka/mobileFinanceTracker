@@ -14,14 +14,30 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
+  #DB Migracije
   flyway:
     enabled: true
     locations: classpath:db/migration
 
+# JWT
 app:
   jwt:
     secret: ${JWT_SECRET}
-    expire-length: 86400000 # 24h za expiry
+    expire-length: 86400000 # 24h do isteka tokena
 
+# PORT
 server:
   port: 8080
+
+# LOGOVI
+logging:
+  file:
+    name: logs/backend.log
+  pattern:
+    file: "%d{dd.MM.yyyy HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n"
+  logback:
+    rollingpolicy:
+      file-name-pattern: logs/archive/backend.%d{yyyy-MM-dd}.%i.log.gz
+      max-file-size: 10MB
+      max-history: 31
+      total-size-cap: 100MB

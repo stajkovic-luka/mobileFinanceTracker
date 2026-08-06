@@ -11,3 +11,6 @@ local.properties
 
 # Secrets
 .env
+
+# Logs
+backend/logs
