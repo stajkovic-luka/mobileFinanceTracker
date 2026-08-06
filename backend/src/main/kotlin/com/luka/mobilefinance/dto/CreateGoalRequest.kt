@@ -17,6 +17,6 @@ data class CreateGoalRequest(
     @field:Digits(integer = 10, fraction = 2)
     val targetAmount: BigDecimal,
 
-    // Rok je optional
+    // deadline se ne mora poslati pri kreiranju!
     val deadline: LocalDate?
 )

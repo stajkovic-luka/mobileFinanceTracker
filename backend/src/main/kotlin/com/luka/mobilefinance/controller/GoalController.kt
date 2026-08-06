@@ -5,14 +5,17 @@ import com.luka.mobilefinance.dto.GoalResponse
 import com.luka.mobilefinance.dto.UpdateGoalRequest
 import com.luka.mobilefinance.service.GoalService
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.bind.annotation.PutMapping
 
 @RestController
 @RequestMapping("/goals")
@@ -39,11 +42,21 @@ class GoalController(private val goalService: GoalService) {
         @PathVariable goalId: Long
     ): GoalResponse = goalService.getGoal(username, goalId)
 
-    // Menja naziv, ciljani iznos i rok postojeceg cilja.
-    @PutMapping("/{goalId}")
+    // Menja jednu ili vise prosledjenih vrednosti postojeceg cilja.
+    @PatchMapping("/{goalId}")
     fun updateGoal(
         @RequestAttribute("username") username: String,
         @PathVariable goalId: Long,
         @Valid @RequestBody request: UpdateGoalRequest
     ): GoalResponse = goalService.updateGoal(username, goalId, request)
+
+    // Brise cilj prijavljenog korisnika i njegove uplate preko database cascade pravila.
+    @DeleteMapping("/{goalId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteGoal(
+        @RequestAttribute("username") username: String,
+        @PathVariable goalId: Long
+    ) {
+        goalService.deleteGoal(username, goalId)
+    }
 }

@@ -68,17 +68,38 @@ class GoalService(
         val goal = goalRepo.findByIdAndUserId(goalId, user.id!!)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Goal not found")
 
-        goal.name = request.name
-        goal.targetAmount = request.targetAmount
+        if (request.name == null && request.targetAmount == null && request.deadline == null) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "At least one field must be provided")
+        }
+
+        if (request.name != null) {
+            goal.name = request.name
+        }
+
+        if (request.targetAmount != null) {
+            goal.targetAmount = request.targetAmount
+
+            // Cilj je zavrsen ako je trenutni iznos jednak ili veci od novog ciljanog iznosa.
+            goal.status = if (goal.currentAmount >= goal.targetAmount) Status.COMPLETED else Status.ACTIVE
+        }
+
         goal.updatedAt = Date()
-        if(request.deadline != null) {
+        if (request.deadline != null) {
             goal.deadline = request.deadline
         }
 
-        // Cilj je zavrsen ako je trenutni iznos jednak ili veci od novog ciljanog iznosa.
-        goal.status = if (goal.currentAmount >= goal.targetAmount) Status.COMPLETED else Status.ACTIVE
-
         return toResponse(goalRepo.save(goal))
+    }
+
+    // Brise cilj samo ako pripada prijavljenom korisniku.
+    fun deleteGoal(username: String, goalId: Long) {
+        val user = userRepo.findByUsername(username)
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User no longer exists")
+
+        val goal = goalRepo.findByIdAndUserId(goalId, user.id!!)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Goal not found")
+
+        goalRepo.delete(goal)
     }
 
     // Pretvara entitet iz baze u odgovor koji saljemo mobilnoj aplikaciji.
