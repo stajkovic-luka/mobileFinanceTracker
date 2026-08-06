@@ -6,8 +6,8 @@ build/
 *.iml
 local.properties
 
-# Internal branding & raw assets (SQRL)
+# Internal branding & raw assets
 /branding/
 
-# Secrets (never commit)
+# Secrets
 .env
