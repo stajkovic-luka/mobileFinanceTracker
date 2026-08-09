@@ -14,10 +14,12 @@ mobileFinanceTracker is a personal project that helps users stay on top of their
 
 - User registration and login with JWT authentication
 - Savings goals CRUD: create, list, view, partially update and delete
-- Create and list deposits for a specific savings goal
-- Automatic update of a goal's current amount, progress percentage and status after a deposit
+- Deposits CRUD for a specific savings goal
+- Automatic update of a goal's current amount, progress percentage and status after a deposit is created, updated or deleted
 - Data access limited to the authenticated user's own goals and deposits
-- Charts and reports with filters — *planned*
+- Deposit reports with date filters
+- File logging with automatic rotation
+- Charts — *planned*
 - Native Android client — *planned*
 
 ## Tech Stack
@@ -70,6 +72,8 @@ mobileFinanceTracker is a personal project that helps users stay on top of their
 
 Flyway applies database migrations automatically on the first run. The current migrations create the `users`, `goals` and `deposits` tables and insert demo data.
 
+Application logs are written to `backend/logs/backend.log` and automatically archived when they reach the configured size.
+
 Run backend tests with:
 
 ```bash
@@ -106,6 +110,9 @@ Authorization: Bearer <JWT_TOKEN>
 | DELETE | `/goals/{goalId}` | Deletes a goal and its deposits |
 | POST | `/goals/{goalId}/deposits` | Creates a deposit for a goal |
 | GET | `/goals/{goalId}/deposits` | Lists deposits for a goal, oldest first |
+| PATCH | `/goals/{goalId}/deposits/{depositId}` | Updates a deposit's amount and/or note |
+| DELETE | `/goals/{goalId}/deposits/{depositId}` | Deletes a deposit and recalculates the goal |
+| GET | `/reports/deposits?from={date}&to={date}` | Returns the authenticated user's deposits and total for a date range |
 
 ## Postman
 
@@ -121,9 +128,9 @@ The repository contains an API collection and an environment template in the `po
 - ✅ Backend skeleton (Spring Boot, Flyway, MySQL)
 - ✅ Registration, login and JWT authentication
 - ✅ Savings goals CRUD
-- ✅ Create and list deposits
-- ⬜ Update and delete deposits
-- ⬜ Charts & reports
+- ✅ Deposits CRUD
+- ✅ Deposit report with date filters
+- ⬜ Charts
 - ⬜ Native Android client
 
 ## License

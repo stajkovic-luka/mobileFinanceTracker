@@ -418,7 +418,7 @@
         {
           "name": "Delete deposit",
           "request": {
-            "method": "PATCH",
+            "method": "DELETE",
             "header": [
               {
                 "key": "Authorization",
