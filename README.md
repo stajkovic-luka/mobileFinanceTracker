@@ -8,7 +8,7 @@ A mobile application for tracking personal savings goals — set a target, log d
 
 ## About
 
-mobileFinanceTracker is a personal project that helps users stay on top of their savings. Define a goal (e.g. "New laptop — €1,000"), log deposits toward it over time, and follow your progress at a glance. The project consists of a REST API backend and a native Android client (in development).
+SQRL is a personal project that helps users stay on top of their savings. Define a goal (e.g. "New laptop — €1,000"), log deposits toward it over time, and follow your progress at a glance. The project consists of a REST API backend and a native Android client (in development).
 
 ## Features
 
@@ -20,7 +20,7 @@ mobileFinanceTracker is a personal project that helps users stay on top of their
 - Deposit reports with date filters
 - File logging with automatic rotation
 - Charts — *planned*
-- Native Android client — *planned*
+- Native Android client — Compose navigation, welcome screen and login with JWT storage
 
 ## Tech Stack
 
@@ -33,12 +33,13 @@ mobileFinanceTracker is a personal project that helps users stay on top of their
 ![Flyway](https://img.shields.io/badge/Flyway-Migrations-CC0202?logo=flyway&logoColor=white)
 ![Spring Data JPA](https://img.shields.io/badge/Spring_Data_JPA-Hibernate-6DB33F?logo=hibernate&logoColor=white)
 
-**Mobile** *(planned)*
+**Mobile** *(in development)*
 
-![Android](https://img.shields.io/badge/Android-Planned-3DDC84?logo=android&logoColor=white)
-![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-Planned-4285F4?logo=jetpackcompose&logoColor=white)
+![Android](https://img.shields.io/badge/Android-Native-3DDC84?logo=android&logoColor=white)
+![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-Material_3-4285F4?logo=jetpackcompose&logoColor=white)
+![Retrofit](https://img.shields.io/badge/Retrofit-HTTP_client-3DDC84)
 
-**Charts & reporting** *(planned)* — library not yet decided (TBD).
+**Charts & reporting** *(planned)* — Vico is the library of choice
 
 ## Getting Started
 
@@ -80,12 +81,23 @@ Run backend tests with:
 ./gradlew test
 ```
 
+### Run the Android app
+
+1. Open the `app/` directory in Android Studio.
+2. Connect a physical Android device through Android Studio.
+3. Start the backend before running the Android app.
+4. Ensure the device and the computer running the backend are on the same local network.
+5. Set `BASE_URL` in `app/app/src/main/java/com/stajkovicluka/financeapp/data/api/ApiClient.kt` to the computer's local IP address and backend port, for example `http://192.168.1.10:8080/`.
+6. Run the `app` configuration.
+
+The current Android client supports the Welcome → Login flow. A successful login stores the returned JWT locally; authenticated goal and deposit requests will be added in the following increments.
+
 ## Project Structure
 
 ```
 mobileFinanceApp/
 ├── backend/   # Spring Boot REST API
-├── app/       # Android client (planned)
+├── app/       # Android client (Jetpack Compose)
 ├── docs/      # Documentation
 └── postman/   # API collection and environment template
 ```
@@ -122,16 +134,6 @@ The repository contains an API collection and an environment template in the `po
 2. In the selected environment, set `baseUrl` to `http://127.0.0.1:8080`.
 3. Send the Login request. Its post-response script saves the returned JWT into the `token` environment variable.
 4. Set `goalId` to an existing goal ID before testing goal-specific or deposit endpoints.
-
-## Roadmap
-
-- ✅ Backend skeleton (Spring Boot, Flyway, MySQL)
-- ✅ Registration, login and JWT authentication
-- ✅ Savings goals CRUD
-- ✅ Deposits CRUD
-- ✅ Deposit report with date filters
-- ⬜ Charts
-- ⬜ Native Android client
 
 ## License
 
