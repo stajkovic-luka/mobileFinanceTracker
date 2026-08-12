@@ -21,11 +21,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.stajkovicluka.financeapp.R
 import com.stajkovicluka.financeapp.ui.auth.LoginScreen
+import com.stajkovicluka.financeapp.ui.auth.RegisterScreen
 import com.stajkovicluka.financeapp.viewmodel.AuthViewModel
 
 // Definise rute i prelazak korisnika izmedju Compose ekrana.
 private const val WELCOME_ROUTE = "welcome"
 private const val LOGIN_ROUTE = "login"
+private const val REGISTER_ROUTE = "register"
 private const val LOGGED_IN_ROUTE = "loggedIn"
 
 @Composable
@@ -39,8 +41,29 @@ fun AppNavigation(authViewModel: AuthViewModel) {
         composable(LOGIN_ROUTE) {
             LoginScreen(
                 authViewModel = authViewModel,
-                onBack = { navController.popBackStack() },
+                onBack = {
+                    authViewModel.clearError()
+                    navController.popBackStack()
+                },
+                onRegister = {
+                    authViewModel.clearError()
+                    navController.navigate(REGISTER_ROUTE)
+                },
                 onLoginSuccess = {
+                    navController.navigate(LOGGED_IN_ROUTE) {
+                        popUpTo(WELCOME_ROUTE) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(REGISTER_ROUTE) {
+            RegisterScreen(
+                authViewModel = authViewModel,
+                onBack = {
+                    authViewModel.clearError()
+                    navController.popBackStack()
+                },
+                onRegisterSuccess = {
                     navController.navigate(LOGGED_IN_ROUTE) {
                         popUpTo(WELCOME_ROUTE) { inclusive = true }
                     }

@@ -26,6 +26,7 @@ import com.stajkovicluka.financeapp.viewmodel.AuthViewModel
 fun LoginScreen(
     authViewModel: AuthViewModel,
     onBack: () -> Unit,
+    onRegister: () -> Unit,
     onLoginSuccess: () -> Unit
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -81,6 +82,9 @@ fun LoginScreen(
             }
             TextButton(onClick = onBack) {
                 Text(stringResource(R.string.back_button))
+            }
+            TextButton(onClick = onRegister) {
+                Text(stringResource(R.string.register_link))
             }
         }
     }

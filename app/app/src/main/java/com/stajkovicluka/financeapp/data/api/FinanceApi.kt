@@ -2,6 +2,7 @@ package com.stajkovicluka.financeapp.data.api
 
 import com.stajkovicluka.financeapp.data.model.AuthResponse
 import com.stajkovicluka.financeapp.data.model.LoginRequest
+import com.stajkovicluka.financeapp.data.model.RegisterRequest
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -9,4 +10,7 @@ import retrofit2.http.POST
 interface FinanceApi {
     @POST("login")
     suspend fun login(@Body request: LoginRequest): AuthResponse
+
+    @POST("register")
+    suspend fun register(@Body request: RegisterRequest): AuthResponse
 }

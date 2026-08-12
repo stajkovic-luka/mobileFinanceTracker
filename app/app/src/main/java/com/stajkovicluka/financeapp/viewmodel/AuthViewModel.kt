@@ -19,8 +19,16 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private val tokenManager = TokenManager(application.applicationContext)
     var username by mutableStateOf("")
     var password by mutableStateOf("")
+    var nameSurname by mutableStateOf("")
+    var email by mutableStateOf("")
+    var registerUsername by mutableStateOf("")
+    var registerPassword by mutableStateOf("")
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
+
+    fun clearError() {
+        errorMessage = null
+    }
 
     fun login(onSuccess: () -> Unit) {
         if (username.isBlank() || password.isBlank()) {
@@ -41,6 +49,44 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                     "Pogresan username ili sifra."
                 } else {
                     "Prijava trenutno nije uspela."
+                }
+            } catch (exception: IOException) {
+                errorMessage = "Nije moguce povezati se sa backend-om."
+            } catch (exception: Exception) {
+                errorMessage = "Doslo je do neocekivane greske."
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun register(onSuccess: () -> Unit) {
+        if (
+            nameSurname.isBlank() || email.isBlank() ||
+            registerUsername.isBlank() || registerPassword.isBlank()
+        ) {
+            errorMessage = "Popunite sva polja."
+            return
+        }
+
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            try {
+                val response = repository.register(
+                    nameSurname = nameSurname,
+                    email = email,
+                    username = registerUsername,
+                    password = registerPassword
+                )
+                tokenManager.saveToken(response.token)
+                onSuccess()
+            } catch (exception: HttpException) {
+                errorMessage = if (exception.code() == 400) {
+                    "Proverite unete podatke."
+                } else {
+                    "Registracija trenutno nije uspela."
                 }
             } catch (exception: IOException) {
                 errorMessage = "Nije moguce povezati se sa backend-om."

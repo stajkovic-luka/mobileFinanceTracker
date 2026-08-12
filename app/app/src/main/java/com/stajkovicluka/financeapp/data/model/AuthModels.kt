@@ -6,6 +6,13 @@ data class LoginRequest(
     val password: String
 )
 
+data class RegisterRequest(
+    val email: String,
+    val username: String,
+    val passwordPlain: String,
+    val nameSurname: String
+)
+
 data class AuthResponse(
     val token: String,
     val username: String,

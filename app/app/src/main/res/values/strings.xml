@@ -8,6 +8,11 @@
     <string name="username_label">Username</string>
     <string name="password_label">Sifra</string>
     <string name="login_button">Prijavi se</string>
+    <string name="register_link">Nemate nalog? Registrujte se</string>
+    <string name="register_title">Registruj se</string>
+    <string name="name_surname_label">Ime i prezime</string>
+    <string name="email_label">Email</string>
+    <string name="register_button">Registruj se</string>
     <string name="back_button">← Nazad</string>
     <string name="login_success">Prijava je uspesna</string>
 </resources>
