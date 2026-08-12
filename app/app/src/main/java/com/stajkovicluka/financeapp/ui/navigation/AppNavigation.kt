@@ -24,6 +24,7 @@ import com.stajkovicluka.financeapp.R
 import com.stajkovicluka.financeapp.ui.auth.LoginScreen
 import com.stajkovicluka.financeapp.ui.auth.RegisterScreen
 import com.stajkovicluka.financeapp.ui.goals.GoalsScreen
+import com.stajkovicluka.financeapp.ui.goals.GoalFormScreen
 import com.stajkovicluka.financeapp.viewmodel.AuthViewModel
 import com.stajkovicluka.financeapp.viewmodel.GoalsViewModel
 
@@ -32,12 +33,17 @@ private const val WELCOME_ROUTE = "welcome"
 private const val LOGIN_ROUTE = "login"
 private const val REGISTER_ROUTE = "register"
 private const val GOALS_ROUTE = "goals"
+private const val CREATE_GOAL_ROUTE = "createGoal"
 
 @Composable
-fun AppNavigation(authViewModel: AuthViewModel) {
+fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = WELCOME_ROUTE) {
+    NavHost(
+        navController = navController,
+        startDestination = WELCOME_ROUTE,
+        modifier = modifier
+    ) {
         composable(WELCOME_ROUTE) {
             WelcomeScreen(onContinue = { navController.navigate(LOGIN_ROUTE) })
         }
@@ -75,7 +81,22 @@ fun AppNavigation(authViewModel: AuthViewModel) {
         }
         composable(GOALS_ROUTE) {
             val goalsViewModel: GoalsViewModel = viewModel()
-            GoalsScreen(goalsViewModel)
+            GoalsScreen(
+                goalsViewModel = goalsViewModel,
+                onCreateGoal = { navController.navigate(CREATE_GOAL_ROUTE) }
+            )
+        }
+        composable(CREATE_GOAL_ROUTE) {
+            val goalsViewModel: GoalsViewModel = viewModel()
+            GoalFormScreen(
+                goalsViewModel = goalsViewModel,
+                onBack = { navController.popBackStack() },
+                onCreateSuccess = {
+                    navController.navigate(GOALS_ROUTE) {
+                        popUpTo(GOALS_ROUTE) { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }

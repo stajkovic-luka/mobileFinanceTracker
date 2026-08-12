@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,7 +26,7 @@ import com.stajkovicluka.financeapp.viewmodel.GoalsViewModel
 
 // Prikazuje listu ciljeva prijavljenog korisnika.
 @Composable
-fun GoalsScreen(goalsViewModel: GoalsViewModel) {
+fun GoalsScreen(goalsViewModel: GoalsViewModel, onCreateGoal: () -> Unit) {
     LaunchedEffect(Unit) {
         goalsViewModel.loadGoals()
     }
@@ -34,14 +35,14 @@ fun GoalsScreen(goalsViewModel: GoalsViewModel) {
         when {
             goalsViewModel.isLoading -> LoadingContent()
             goalsViewModel.errorMessage != null -> MessageContent(goalsViewModel.errorMessage!!)
-            goalsViewModel.goals.isEmpty() -> MessageContent(stringResource(R.string.goals_empty))
-            else -> GoalsList(goalsViewModel.goals)
+            goalsViewModel.goals.isEmpty() -> EmptyGoalsContent(onCreateGoal)
+            else -> GoalsList(goalsViewModel.goals, onCreateGoal)
         }
     }
 }
 
 @Composable
-private fun GoalsList(goals: List<Goal>) {
+private fun GoalsList(goals: List<Goal>, onCreateGoal: () -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -49,15 +50,38 @@ private fun GoalsList(goals: List<Goal>) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            Text(
-                text = stringResource(R.string.goals_title),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
+            Column {
+                Text(
+                    text = stringResource(R.string.goals_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Button(
+                    onClick = onCreateGoal,
+                    modifier = Modifier.padding(top = 12.dp)
+                ) {
+                    Text(stringResource(R.string.create_goal_button))
+                }
+            }
         }
         items(goals, key = { it.id }) { goal ->
             GoalCard(goal)
+        }
+    }
+}
+
+@Composable
+private fun EmptyGoalsContent(onCreateGoal: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = stringResource(R.string.goals_empty), style = MaterialTheme.typography.bodyLarge)
+        Button(onClick = onCreateGoal, modifier = Modifier.padding(top = 16.dp)) {
+            Text(stringResource(R.string.create_goal_button))
         }
     }
 }

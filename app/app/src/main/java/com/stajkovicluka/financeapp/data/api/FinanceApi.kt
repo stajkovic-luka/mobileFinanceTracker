@@ -2,6 +2,7 @@ package com.stajkovicluka.financeapp.data.api
 
 import com.stajkovicluka.financeapp.data.model.AuthResponse
 import com.stajkovicluka.financeapp.data.model.Goal
+import com.stajkovicluka.financeapp.data.model.CreateGoalRequest
 import com.stajkovicluka.financeapp.data.model.LoginRequest
 import com.stajkovicluka.financeapp.data.model.RegisterRequest
 import retrofit2.http.Body
@@ -19,4 +20,10 @@ interface FinanceApi {
 
     @GET("goals")
     suspend fun getGoals(@Header("Authorization") authorization: String): List<Goal>
+
+    @POST("goals")
+    suspend fun createGoal(
+        @Header("Authorization") authorization: String,
+        @Body request: CreateGoalRequest
+    ): Goal
 }

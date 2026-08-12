@@ -12,3 +12,9 @@ data class Goal(
     val deadline: String?,
     val status: String
 )
+
+data class CreateGoalRequest(
+    val name: String,
+    val targetAmount: BigDecimal,
+    val deadline: String?
+)
