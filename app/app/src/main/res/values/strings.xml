@@ -16,5 +16,6 @@
     <string name="register_button">Registruj se</string>
     <string name="confirm_password_label">Ponovi sifru</string>
     <string name="back_button">← Nazad</string>
-    <string name="login_success">Prijava je uspesna</string>
+    <string name="goals_title">Moji ciljevi</string>
+    <string name="goals_empty">Nemate sacuvane ciljeve.</string>
 </resources>

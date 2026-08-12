@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -22,13 +23,15 @@ import androidx.navigation.compose.rememberNavController
 import com.stajkovicluka.financeapp.R
 import com.stajkovicluka.financeapp.ui.auth.LoginScreen
 import com.stajkovicluka.financeapp.ui.auth.RegisterScreen
+import com.stajkovicluka.financeapp.ui.goals.GoalsScreen
 import com.stajkovicluka.financeapp.viewmodel.AuthViewModel
+import com.stajkovicluka.financeapp.viewmodel.GoalsViewModel
 
 // Definise rute i prelazak korisnika izmedju Compose ekrana.
 private const val WELCOME_ROUTE = "welcome"
 private const val LOGIN_ROUTE = "login"
 private const val REGISTER_ROUTE = "register"
-private const val LOGGED_IN_ROUTE = "loggedIn"
+private const val GOALS_ROUTE = "goals"
 
 @Composable
 fun AppNavigation(authViewModel: AuthViewModel) {
@@ -50,7 +53,7 @@ fun AppNavigation(authViewModel: AuthViewModel) {
                     navController.navigate(REGISTER_ROUTE)
                 },
                 onLoginSuccess = {
-                    navController.navigate(LOGGED_IN_ROUTE) {
+                    navController.navigate(GOALS_ROUTE) {
                         popUpTo(WELCOME_ROUTE) { inclusive = true }
                     }
                 }
@@ -64,14 +67,15 @@ fun AppNavigation(authViewModel: AuthViewModel) {
                     navController.popBackStack()
                 },
                 onRegisterSuccess = {
-                    navController.navigate(LOGGED_IN_ROUTE) {
+                    navController.navigate(GOALS_ROUTE) {
                         popUpTo(WELCOME_ROUTE) { inclusive = true }
                     }
                 }
             )
         }
-        composable(LOGGED_IN_ROUTE) {
-            LoggedInScreen()
+        composable(GOALS_ROUTE) {
+            val goalsViewModel: GoalsViewModel = viewModel()
+            GoalsScreen(goalsViewModel)
         }
     }
 }
@@ -113,22 +117,6 @@ private fun WelcomeScreen(onContinue: () -> Unit) {
             ) {
                 Text(stringResource(R.string.welcome_continue))
             }
-        }
-    }
-}
-
-@Composable
-private fun LoggedInScreen() {
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = stringResource(R.string.login_success),
-                style = MaterialTheme.typography.headlineMedium
-            )
         }
     }
 }
