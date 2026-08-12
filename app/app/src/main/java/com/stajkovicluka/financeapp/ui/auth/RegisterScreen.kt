@@ -44,13 +44,22 @@ fun RegisterScreen(
                 style = MaterialTheme.typography.headlineMedium
             )
             OutlinedTextField(
-                value = authViewModel.nameSurname,
-                onValueChange = { authViewModel.nameSurname = it },
-                label = { Text(stringResource(R.string.name_surname_label)) },
+                value = authViewModel.firstName,
+                onValueChange = { authViewModel.firstName = it },
+                label = { Text(stringResource(R.string.first_name_label)) },
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 24.dp)
+            )
+            OutlinedTextField(
+                value = authViewModel.lastName,
+                onValueChange = { authViewModel.lastName = it },
+                label = { Text(stringResource(R.string.last_name_label)) },
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
             )
             OutlinedTextField(
                 value = authViewModel.email,
@@ -74,6 +83,16 @@ fun RegisterScreen(
                 value = authViewModel.registerPassword,
                 onValueChange = { authViewModel.registerPassword = it },
                 label = { Text(stringResource(R.string.password_label)) },
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
+            )
+            OutlinedTextField(
+                value = authViewModel.confirmPassword,
+                onValueChange = { authViewModel.confirmPassword = it },
+                label = { Text(stringResource(R.string.confirm_password_label)) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier

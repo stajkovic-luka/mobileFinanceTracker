@@ -19,10 +19,12 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private val tokenManager = TokenManager(application.applicationContext)
     var username by mutableStateOf("")
     var password by mutableStateOf("")
-    var nameSurname by mutableStateOf("")
+    var firstName by mutableStateOf("")
+    var lastName by mutableStateOf("")
     var email by mutableStateOf("")
     var registerUsername by mutableStateOf("")
     var registerPassword by mutableStateOf("")
+    var confirmPassword by mutableStateOf("")
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
 
@@ -61,11 +63,24 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun register(onSuccess: () -> Unit) {
+        val trimmedFirstName = firstName.trim()
+        val trimmedLastName = lastName.trim()
+
         if (
-            nameSurname.isBlank() || email.isBlank() ||
-            registerUsername.isBlank() || registerPassword.isBlank()
+            trimmedFirstName.isBlank() || trimmedLastName.isBlank() || email.isBlank() ||
+            registerUsername.isBlank() || registerPassword.isBlank() || confirmPassword.isBlank()
         ) {
             errorMessage = "Popunite sva polja."
+            return
+        }
+
+        if (!EMAIL_REGEX.matches(email)) {
+            errorMessage = "Unesite ispravnu email adresu."
+            return
+        }
+
+        if (registerPassword != confirmPassword) {
+            errorMessage = "Sifre se ne poklapaju."
             return
         }
 
@@ -75,7 +90,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
             try {
                 val response = repository.register(
-                    nameSurname = nameSurname,
+                    nameSurname = "$trimmedFirstName $trimmedLastName",
                     email = email,
                     username = registerUsername,
                     password = registerPassword
@@ -96,5 +111,9 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 isLoading = false
             }
         }
+    }
+
+    private companion object {
+        val EMAIL_REGEX = Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")
     }
 }
