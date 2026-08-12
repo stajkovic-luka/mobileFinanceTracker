@@ -25,4 +25,6 @@
     <string name="deadline_optional_label">Rok (opciono)</string>
     <string name="select_date_button">Izaberi</string>
     <string name="save_goal_button">Sacuvaj cilj</string>
+    <string name="deposits_title">Uplate</string>
+    <string name="deposits_empty">Nema uplata za ovaj cilj.</string>
 </resources>

@@ -20,13 +20,17 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.stajkovicluka.financeapp.R
 import com.stajkovicluka.financeapp.ui.auth.LoginScreen
 import com.stajkovicluka.financeapp.ui.auth.RegisterScreen
 import com.stajkovicluka.financeapp.ui.goals.GoalsScreen
 import com.stajkovicluka.financeapp.ui.goals.GoalFormScreen
+import com.stajkovicluka.financeapp.ui.goals.GoalDetailsScreen
 import com.stajkovicluka.financeapp.viewmodel.AuthViewModel
 import com.stajkovicluka.financeapp.viewmodel.GoalsViewModel
+import com.stajkovicluka.financeapp.viewmodel.GoalDetailsViewModel
 
 // Definise rute i prelazak korisnika izmedju Compose ekrana.
 private const val WELCOME_ROUTE = "welcome"
@@ -34,6 +38,7 @@ private const val LOGIN_ROUTE = "login"
 private const val REGISTER_ROUTE = "register"
 private const val GOALS_ROUTE = "goals"
 private const val CREATE_GOAL_ROUTE = "createGoal"
+private const val GOAL_DETAILS_ROUTE = "goalDetails/{goalId}"
 
 @Composable
 fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
@@ -83,7 +88,8 @@ fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
             val goalsViewModel: GoalsViewModel = viewModel()
             GoalsScreen(
                 goalsViewModel = goalsViewModel,
-                onCreateGoal = { navController.navigate(CREATE_GOAL_ROUTE) }
+                onCreateGoal = { navController.navigate(CREATE_GOAL_ROUTE) },
+                onGoalClick = { goalId -> navController.navigate("goalDetails/$goalId") }
             )
         }
         composable(CREATE_GOAL_ROUTE) {
@@ -96,6 +102,18 @@ fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
                         popUpTo(GOALS_ROUTE) { inclusive = true }
                     }
                 }
+            )
+        }
+        composable(
+            route = GOAL_DETAILS_ROUTE,
+            arguments = listOf(navArgument("goalId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val goalId = backStackEntry.arguments?.getLong("goalId") ?: return@composable
+            val goalDetailsViewModel: GoalDetailsViewModel = viewModel()
+            GoalDetailsScreen(
+                goalId = goalId,
+                goalDetailsViewModel = goalDetailsViewModel,
+                onBack = { navController.popBackStack() }
             )
         }
     }

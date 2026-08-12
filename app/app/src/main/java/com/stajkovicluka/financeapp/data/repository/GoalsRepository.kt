@@ -10,6 +10,10 @@ class GoalsRepository(private val api: FinanceApi) {
         return api.getGoals("Bearer $token")
     }
 
+    suspend fun getGoal(token: String, goalId: Long): Goal {
+        return api.getGoal("Bearer $token", goalId)
+    }
+
     suspend fun createGoal(token: String, request: CreateGoalRequest): Goal {
         return api.createGoal("Bearer $token", request)
     }
