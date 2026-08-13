@@ -14,3 +14,8 @@ data class CreateDepositRequest(
     val amount: BigDecimal,
     val note: String?
 )
+
+data class UpdateDepositRequest(
+    val amount: BigDecimal,
+    val note: String
+)

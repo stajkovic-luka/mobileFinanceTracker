@@ -32,4 +32,12 @@
     <string name="deposit_amount_label">Iznos uplate</string>
     <string name="deposit_note_label">Napomena (opciono)</string>
     <string name="save_deposit_button">Sacuvaj uplatu</string>
+    <string name="edit_deposit_title">Izmeni uplatu</string>
+    <string name="save_deposit_changes_button">Sacuvaj izmene</string>
+    <string name="edit_deposit_button">Izmeni</string>
+    <string name="delete_deposit_button">Obrisi</string>
+    <string name="delete_deposit_title">Obrisi uplatu</string>
+    <string name="delete_deposit_message">Da li zelite da obrisete ovu uplatu?</string>
+    <string name="delete_button">Obrisi</string>
+    <string name="cancel_button">Otkazi</string>
 </resources>

@@ -41,6 +41,7 @@ private const val GOALS_ROUTE = "goals"
 private const val CREATE_GOAL_ROUTE = "createGoal"
 private const val GOAL_DETAILS_ROUTE = "goalDetails/{goalId}"
 private const val CREATE_DEPOSIT_ROUTE = "createDeposit/{goalId}"
+private const val EDIT_DEPOSIT_ROUTE = "editDeposit/{goalId}/{depositId}"
 
 @Composable
 fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
@@ -116,7 +117,13 @@ fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
                 goalId = goalId,
                 goalDetailsViewModel = goalDetailsViewModel,
                 onBack = { navController.popBackStack() },
-                onCreateDeposit = { navController.navigate("createDeposit/$goalId") }
+                onCreateDeposit = { navController.navigate("createDeposit/$goalId") },
+                onEditDeposit = { depositId -> navController.navigate("editDeposit/$goalId/$depositId") },
+                onDepositChanged = {
+                    navController.navigate("goalDetails/$goalId") {
+                        popUpTo(GOAL_DETAILS_ROUTE) { inclusive = true }
+                    }
+                }
             )
         }
         composable(
@@ -129,12 +136,44 @@ fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
                 goalId = goalId,
                 goalDetailsViewModel = goalDetailsViewModel,
                 onBack = { navController.popBackStack() },
-                onCreateSuccess = {
+                onSaveSuccess = {
                     navController.navigate("goalDetails/$goalId") {
                         popUpTo(GOAL_DETAILS_ROUTE) { inclusive = true }
                     }
                 }
             )
+        }
+        composable(
+            route = EDIT_DEPOSIT_ROUTE,
+            arguments = listOf(
+                navArgument("goalId") { type = NavType.LongType },
+                navArgument("depositId") { type = NavType.LongType }
+            )
+        ) { backStackEntry ->
+            val goalId = backStackEntry.arguments?.getLong("goalId") ?: return@composable
+            val depositId = backStackEntry.arguments?.getLong("depositId") ?: return@composable
+            val goalDetailsViewModel: GoalDetailsViewModel = viewModel()
+
+            androidx.compose.runtime.LaunchedEffect(goalId) {
+                goalDetailsViewModel.loadDetails(goalId)
+            }
+
+            val deposit = goalDetailsViewModel.deposits.find { it.id == depositId }
+            if (goalDetailsViewModel.isLoading) {
+                androidx.compose.material3.CircularProgressIndicator()
+            } else if (deposit != null) {
+                DepositFormScreen(
+                    goalId = goalId,
+                    goalDetailsViewModel = goalDetailsViewModel,
+                    onBack = { navController.popBackStack() },
+                    onSaveSuccess = {
+                        navController.navigate("goalDetails/$goalId") {
+                            popUpTo(GOAL_DETAILS_ROUTE) { inclusive = true }
+                        }
+                    },
+                    depositToEdit = deposit
+                )
+            }
         }
     }
 }

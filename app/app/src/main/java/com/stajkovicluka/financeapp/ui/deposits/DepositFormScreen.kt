@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.stajkovicluka.financeapp.R
 import com.stajkovicluka.financeapp.viewmodel.GoalDetailsViewModel
+import com.stajkovicluka.financeapp.data.model.Deposit
 
 // Prikazuje formu za dodavanje ili izmenu uplate za jedan cilj.
 @Composable
@@ -34,10 +36,18 @@ fun DepositFormScreen(
     goalId: Long,
     goalDetailsViewModel: GoalDetailsViewModel,
     onBack: () -> Unit,
-    onCreateSuccess: () -> Unit
+    onSaveSuccess: () -> Unit,
+    depositToEdit: Deposit? = null
 ) {
     var amount by rememberSaveable { mutableStateOf("") }
     var note by rememberSaveable { mutableStateOf("") }
+
+    LaunchedEffect(depositToEdit?.id) {
+        if (depositToEdit != null) {
+            amount = depositToEdit.amount.toPlainString()
+            note = depositToEdit.note.orEmpty()
+        }
+    }
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -49,7 +59,9 @@ fun DepositFormScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = stringResource(R.string.create_deposit_title),
+                text = stringResource(
+                    if (depositToEdit == null) R.string.create_deposit_title else R.string.edit_deposit_title
+                ),
                 style = MaterialTheme.typography.headlineMedium
             )
             OutlinedTextField(
@@ -79,7 +91,17 @@ fun DepositFormScreen(
             }
             Button(
                 onClick = {
-                    goalDetailsViewModel.createDeposit(goalId, amount, note, onCreateSuccess)
+                    if (depositToEdit == null) {
+                        goalDetailsViewModel.createDeposit(goalId, amount, note, onSaveSuccess)
+                    } else {
+                        goalDetailsViewModel.updateDeposit(
+                            goalId,
+                            depositToEdit.id,
+                            amount,
+                            note,
+                            onSaveSuccess
+                        )
+                    }
                 },
                 enabled = !goalDetailsViewModel.isLoading,
                 modifier = Modifier
@@ -89,7 +111,11 @@ fun DepositFormScreen(
                 if (goalDetailsViewModel.isLoading) {
                     CircularProgressIndicator()
                 } else {
-                    Text(stringResource(R.string.save_deposit_button))
+                    Text(
+                        stringResource(
+                            if (depositToEdit == null) R.string.save_deposit_button else R.string.save_deposit_changes_button
+                        )
+                    )
                 }
             }
             TextButton(onClick = onBack) {

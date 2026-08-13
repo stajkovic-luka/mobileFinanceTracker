@@ -5,12 +5,15 @@ import com.stajkovicluka.financeapp.data.model.Goal
 import com.stajkovicluka.financeapp.data.model.CreateGoalRequest
 import com.stajkovicluka.financeapp.data.model.Deposit
 import com.stajkovicluka.financeapp.data.model.CreateDepositRequest
+import com.stajkovicluka.financeapp.data.model.UpdateDepositRequest
 import com.stajkovicluka.financeapp.data.model.LoginRequest
 import com.stajkovicluka.financeapp.data.model.RegisterRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PATCH
+import retrofit2.http.DELETE
 
 // Definise Retrofit pozive ka endpoint-ima Spring Boot backend-a.
 interface FinanceApi {
@@ -41,6 +44,21 @@ interface FinanceApi {
         @retrofit2.http.Path("goalId") goalId: Long,
         @Body request: CreateDepositRequest
     ): Deposit
+
+    @PATCH("goals/{goalId}/deposits/{depositId}")
+    suspend fun updateDeposit(
+        @Header("Authorization") authorization: String,
+        @retrofit2.http.Path("goalId") goalId: Long,
+        @retrofit2.http.Path("depositId") depositId: Long,
+        @Body request: UpdateDepositRequest
+    ): Deposit
+
+    @DELETE("goals/{goalId}/deposits/{depositId}")
+    suspend fun deleteDeposit(
+        @Header("Authorization") authorization: String,
+        @retrofit2.http.Path("goalId") goalId: Long,
+        @retrofit2.http.Path("depositId") depositId: Long
+    )
 
     @POST("goals")
     suspend fun createGoal(

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.stajkovicluka.financeapp.data.api.ApiClient
 import com.stajkovicluka.financeapp.data.model.Deposit
 import com.stajkovicluka.financeapp.data.model.CreateDepositRequest
+import com.stajkovicluka.financeapp.data.model.UpdateDepositRequest
 import com.stajkovicluka.financeapp.data.model.Goal
 import com.stajkovicluka.financeapp.data.repository.DepositsRepository
 import com.stajkovicluka.financeapp.data.repository.GoalsRepository
@@ -96,6 +97,79 @@ class GoalDetailsViewModel(application: Application) : AndroidViewModel(applicat
                 } else {
                     "Uplatu trenutno nije moguce sacuvati."
                 }
+            } catch (exception: IOException) {
+                errorMessage = "Nije moguce povezati se sa backend-om."
+            } catch (exception: Exception) {
+                errorMessage = "Doslo je do neocekivane greske."
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun updateDeposit(
+        goalId: Long,
+        depositId: Long,
+        amountText: String,
+        note: String,
+        onSuccess: () -> Unit
+    ) {
+        val amount = amountText.replace(',', '.').toBigDecimalOrNull()
+        if (amount == null || amount <= BigDecimal.ZERO) {
+            errorMessage = "Unesite iznos veci od nule."
+            return
+        }
+
+        val token = tokenManager.getToken()
+        if (token == null) {
+            errorMessage = "Nema aktivne prijave."
+            return
+        }
+
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            try {
+                depositsRepository.updateDeposit(
+                    token = token,
+                    goalId = goalId,
+                    depositId = depositId,
+                    request = UpdateDepositRequest(amount, note.trim())
+                )
+                onSuccess()
+            } catch (exception: HttpException) {
+                errorMessage = if (exception.code() == 400) {
+                    "Proverite unete podatke."
+                } else {
+                    "Uplatu trenutno nije moguce izmeniti."
+                }
+            } catch (exception: IOException) {
+                errorMessage = "Nije moguce povezati se sa backend-om."
+            } catch (exception: Exception) {
+                errorMessage = "Doslo je do neocekivane greske."
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun deleteDeposit(goalId: Long, depositId: Long, onSuccess: () -> Unit) {
+        val token = tokenManager.getToken()
+        if (token == null) {
+            errorMessage = "Nema aktivne prijave."
+            return
+        }
+
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            try {
+                depositsRepository.deleteDeposit(token, goalId, depositId)
+                onSuccess()
+            } catch (exception: HttpException) {
+                errorMessage = "Uplatu trenutno nije moguce obrisati."
             } catch (exception: IOException) {
                 errorMessage = "Nije moguce povezati se sa backend-om."
             } catch (exception: Exception) {
