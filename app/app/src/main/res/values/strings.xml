@@ -27,4 +27,9 @@
     <string name="save_goal_button">Sacuvaj cilj</string>
     <string name="deposits_title">Uplate</string>
     <string name="deposits_empty">Nema uplata za ovaj cilj.</string>
+    <string name="create_deposit_button">+ Dodaj uplatu</string>
+    <string name="create_deposit_title">Nova uplata</string>
+    <string name="deposit_amount_label">Iznos uplate</string>
+    <string name="deposit_note_label">Napomena (opciono)</string>
+    <string name="save_deposit_button">Sacuvaj uplatu</string>
 </resources>

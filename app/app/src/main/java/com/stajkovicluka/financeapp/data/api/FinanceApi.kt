@@ -4,6 +4,7 @@ import com.stajkovicluka.financeapp.data.model.AuthResponse
 import com.stajkovicluka.financeapp.data.model.Goal
 import com.stajkovicluka.financeapp.data.model.CreateGoalRequest
 import com.stajkovicluka.financeapp.data.model.Deposit
+import com.stajkovicluka.financeapp.data.model.CreateDepositRequest
 import com.stajkovicluka.financeapp.data.model.LoginRequest
 import com.stajkovicluka.financeapp.data.model.RegisterRequest
 import retrofit2.http.Body
@@ -33,6 +34,13 @@ interface FinanceApi {
         @Header("Authorization") authorization: String,
         @retrofit2.http.Path("goalId") goalId: Long
     ): List<Deposit>
+
+    @POST("goals/{goalId}/deposits")
+    suspend fun createDeposit(
+        @Header("Authorization") authorization: String,
+        @retrofit2.http.Path("goalId") goalId: Long,
+        @Body request: CreateDepositRequest
+    ): Deposit
 
     @POST("goals")
     suspend fun createGoal(

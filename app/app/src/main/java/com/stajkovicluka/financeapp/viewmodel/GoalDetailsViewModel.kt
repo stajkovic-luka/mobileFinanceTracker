@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.stajkovicluka.financeapp.data.api.ApiClient
 import com.stajkovicluka.financeapp.data.model.Deposit
+import com.stajkovicluka.financeapp.data.model.CreateDepositRequest
 import com.stajkovicluka.financeapp.data.model.Goal
 import com.stajkovicluka.financeapp.data.repository.DepositsRepository
 import com.stajkovicluka.financeapp.data.repository.GoalsRepository
@@ -15,6 +16,7 @@ import com.stajkovicluka.financeapp.util.TokenManager
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import java.math.BigDecimal
 
 // Drzi stanje detalja cilja i akcije nad njegovim uplatama.
 class GoalDetailsViewModel(application: Application) : AndroidViewModel(application) {
@@ -48,6 +50,51 @@ class GoalDetailsViewModel(application: Application) : AndroidViewModel(applicat
                     "Prijava je istekla."
                 } else {
                     "Detalji cilja trenutno nisu dostupni."
+                }
+            } catch (exception: IOException) {
+                errorMessage = "Nije moguce povezati se sa backend-om."
+            } catch (exception: Exception) {
+                errorMessage = "Doslo je do neocekivane greske."
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun createDeposit(
+        goalId: Long,
+        amountText: String,
+        note: String,
+        onSuccess: () -> Unit
+    ) {
+        val amount = amountText.replace(',', '.').toBigDecimalOrNull()
+        if (amount == null || amount <= BigDecimal.ZERO) {
+            errorMessage = "Unesite iznos veci od nule."
+            return
+        }
+
+        val token = tokenManager.getToken()
+        if (token == null) {
+            errorMessage = "Nema aktivne prijave."
+            return
+        }
+
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            try {
+                depositsRepository.createDeposit(
+                    token = token,
+                    goalId = goalId,
+                    request = CreateDepositRequest(amount, note.trim().ifBlank { null })
+                )
+                onSuccess()
+            } catch (exception: HttpException) {
+                errorMessage = if (exception.code() == 400) {
+                    "Proverite unete podatke."
+                } else {
+                    "Uplatu trenutno nije moguce sacuvati."
                 }
             } catch (exception: IOException) {
                 errorMessage = "Nije moguce povezati se sa backend-om."

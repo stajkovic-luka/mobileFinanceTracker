@@ -9,3 +9,8 @@ data class Deposit(
     val note: String?,
     val createdAt: String
 )
+
+data class CreateDepositRequest(
+    val amount: BigDecimal,
+    val note: String?
+)

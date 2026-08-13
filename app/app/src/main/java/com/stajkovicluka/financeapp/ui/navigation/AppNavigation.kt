@@ -28,6 +28,7 @@ import com.stajkovicluka.financeapp.ui.auth.RegisterScreen
 import com.stajkovicluka.financeapp.ui.goals.GoalsScreen
 import com.stajkovicluka.financeapp.ui.goals.GoalFormScreen
 import com.stajkovicluka.financeapp.ui.goals.GoalDetailsScreen
+import com.stajkovicluka.financeapp.ui.deposits.DepositFormScreen
 import com.stajkovicluka.financeapp.viewmodel.AuthViewModel
 import com.stajkovicluka.financeapp.viewmodel.GoalsViewModel
 import com.stajkovicluka.financeapp.viewmodel.GoalDetailsViewModel
@@ -39,6 +40,7 @@ private const val REGISTER_ROUTE = "register"
 private const val GOALS_ROUTE = "goals"
 private const val CREATE_GOAL_ROUTE = "createGoal"
 private const val GOAL_DETAILS_ROUTE = "goalDetails/{goalId}"
+private const val CREATE_DEPOSIT_ROUTE = "createDeposit/{goalId}"
 
 @Composable
 fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
@@ -113,7 +115,25 @@ fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
             GoalDetailsScreen(
                 goalId = goalId,
                 goalDetailsViewModel = goalDetailsViewModel,
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onCreateDeposit = { navController.navigate("createDeposit/$goalId") }
+            )
+        }
+        composable(
+            route = CREATE_DEPOSIT_ROUTE,
+            arguments = listOf(navArgument("goalId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val goalId = backStackEntry.arguments?.getLong("goalId") ?: return@composable
+            val goalDetailsViewModel: GoalDetailsViewModel = viewModel()
+            DepositFormScreen(
+                goalId = goalId,
+                goalDetailsViewModel = goalDetailsViewModel,
+                onBack = { navController.popBackStack() },
+                onCreateSuccess = {
+                    navController.navigate("goalDetails/$goalId") {
+                        popUpTo(GOAL_DETAILS_ROUTE) { inclusive = true }
+                    }
+                }
             )
         }
     }

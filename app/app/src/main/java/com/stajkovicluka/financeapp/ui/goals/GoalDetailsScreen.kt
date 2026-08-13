@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -30,7 +31,8 @@ import com.stajkovicluka.financeapp.viewmodel.GoalDetailsViewModel
 fun GoalDetailsScreen(
     goalId: Long,
     goalDetailsViewModel: GoalDetailsViewModel,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onCreateDeposit: () -> Unit
 ) {
     LaunchedEffect(goalId) {
         goalDetailsViewModel.loadDetails(goalId)
@@ -43,14 +45,20 @@ fun GoalDetailsScreen(
             goalDetailsViewModel.goal != null -> DetailsContent(
                 goal = goalDetailsViewModel.goal!!,
                 deposits = goalDetailsViewModel.deposits,
-                onBack = onBack
+                onBack = onBack,
+                onCreateDeposit = onCreateDeposit
             )
         }
     }
 }
 
 @Composable
-private fun DetailsContent(goal: Goal, deposits: List<Deposit>, onBack: () -> Unit) {
+private fun DetailsContent(
+    goal: Goal,
+    deposits: List<Deposit>,
+    onBack: () -> Unit,
+    onCreateDeposit: () -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -66,12 +74,20 @@ private fun DetailsContent(goal: Goal, deposits: List<Deposit>, onBack: () -> Un
             GoalSummary(goal)
         }
         item {
-            Text(
-                text = stringResource(R.string.deposits_title),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 12.dp)
-            )
+            Column {
+                Text(
+                    text = stringResource(R.string.deposits_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 12.dp)
+                )
+                Button(
+                    onClick = onCreateDeposit,
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Text(stringResource(R.string.create_deposit_button))
+                }
+            }
         }
         if (deposits.isEmpty()) {
             item {
