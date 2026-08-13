@@ -28,16 +28,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.stajkovicluka.financeapp.data.model.Goal
 import com.stajkovicluka.financeapp.R
-import com.stajkovicluka.financeapp.viewmodel.GoalsViewModel
 import java.util.Calendar
 
 // Prikazuje formu za dodavanje ili izmenu cilja stednje.
 @Composable
 fun GoalFormScreen(
-    goalsViewModel: GoalsViewModel,
     onBack: () -> Unit,
-    onCreateSuccess: () -> Unit
+    onSave: (String, String, String?, () -> Unit) -> Unit,
+    onSaveSuccess: () -> Unit,
+    isLoading: Boolean,
+    errorMessage: String?,
+    goalToEdit: Goal? = null
 ) {
     var name by rememberSaveable { mutableStateOf("") }
     var targetAmount by rememberSaveable { mutableStateOf("") }
@@ -45,6 +48,15 @@ fun GoalFormScreen(
     var deadlineForDisplay by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
     val calendar = remember { Calendar.getInstance() }
+
+    androidx.compose.runtime.LaunchedEffect(goalToEdit?.id) {
+        goalToEdit?.let { goal ->
+            name = goal.name
+            targetAmount = goal.targetAmount.toPlainString()
+            deadlineForRequest = goal.deadline
+            deadlineForDisplay = goal.deadline?.let(::formatDate).orEmpty()
+        }
+    }
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -56,7 +68,9 @@ fun GoalFormScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = stringResource(R.string.create_goal_title),
+                text = stringResource(
+                    if (goalToEdit == null) R.string.create_goal_title else R.string.edit_goal_title
+                ),
                 style = MaterialTheme.typography.headlineMedium
             )
             OutlinedTextField(
@@ -105,7 +119,7 @@ fun GoalFormScreen(
                     }
                 }
             )
-            goalsViewModel.errorMessage?.let { message ->
+            errorMessage?.let { message ->
                 Text(
                     text = message,
                     color = MaterialTheme.colorScheme.error,
@@ -114,17 +128,25 @@ fun GoalFormScreen(
             }
             Button(
                 onClick = {
-                    goalsViewModel.createGoal(name, targetAmount, deadlineForRequest, onCreateSuccess)
+                    onSave(name, targetAmount, deadlineForRequest, onSaveSuccess)
                 },
-                enabled = !goalsViewModel.isLoading,
+                enabled = !isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 24.dp)
             ) {
-                if (goalsViewModel.isLoading) {
+                if (isLoading) {
                     CircularProgressIndicator()
                 } else {
-                    Text(stringResource(R.string.save_goal_button))
+                    Text(
+                        stringResource(
+                            if (goalToEdit == null) {
+                                R.string.save_goal_button
+                            } else {
+                                R.string.save_goal_changes_button
+                            }
+                        )
+                    )
                 }
             }
             TextButton(onClick = onBack) {
@@ -132,4 +154,9 @@ fun GoalFormScreen(
             }
         }
     }
+}
+
+private fun formatDate(date: String): String {
+    val parts = date.substringBefore("T").split("-")
+    return if (parts.size == 3) "${parts[2]}.${parts[1]}.${parts[0]}" else date
 }

@@ -37,6 +37,8 @@ fun GoalDetailsScreen(
     goalId: Long,
     goalDetailsViewModel: GoalDetailsViewModel,
     onBack: () -> Unit,
+    onEditGoal: () -> Unit,
+    onGoalDeleted: () -> Unit,
     onCreateDeposit: () -> Unit,
     onEditDeposit: (Long) -> Unit,
     onDepositChanged: () -> Unit
@@ -53,6 +55,10 @@ fun GoalDetailsScreen(
                 goal = goalDetailsViewModel.goal!!,
                 deposits = goalDetailsViewModel.deposits,
                 onBack = onBack,
+                onEditGoal = onEditGoal,
+                onDeleteGoal = {
+                    goalDetailsViewModel.deleteGoal(goalId, onGoalDeleted)
+                },
                 onCreateDeposit = onCreateDeposit,
                 onEditDeposit = onEditDeposit,
                 onDeleteDeposit = { depositId ->
@@ -68,11 +74,35 @@ private fun DetailsContent(
     goal: Goal,
     deposits: List<Deposit>,
     onBack: () -> Unit,
+    onEditGoal: () -> Unit,
+    onDeleteGoal: () -> Unit,
     onCreateDeposit: () -> Unit,
     onEditDeposit: (Long) -> Unit,
     onDeleteDeposit: (Long) -> Unit
 ) {
+    var showDeleteGoalDialog by remember { mutableStateOf(false) }
     var depositToDelete by remember { mutableStateOf<Deposit?>(null) }
+
+    if (showDeleteGoalDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteGoalDialog = false },
+            title = { Text(stringResource(R.string.delete_goal_title)) },
+            text = { Text(stringResource(R.string.delete_goal_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDeleteGoalDialog = false
+                    onDeleteGoal()
+                }) {
+                    Text(stringResource(R.string.delete_button))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteGoalDialog = false }) {
+                    Text(stringResource(R.string.cancel_button))
+                }
+            }
+        )
+    }
 
     depositToDelete?.let { deposit ->
         AlertDialog(
@@ -108,6 +138,16 @@ private fun DetailsContent(
         }
         item {
             GoalSummary(goal)
+        }
+        item {
+            Column {
+                TextButton(onClick = onEditGoal) {
+                    Text(stringResource(R.string.edit_goal_button))
+                }
+                TextButton(onClick = { showDeleteGoalDialog = true }) {
+                    Text(stringResource(R.string.delete_goal_button))
+                }
+            }
         }
         item {
             Column {

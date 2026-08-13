@@ -18,3 +18,9 @@ data class CreateGoalRequest(
     val targetAmount: BigDecimal,
     val deadline: String?
 )
+
+data class UpdateGoalRequest(
+    val name: String,
+    val targetAmount: BigDecimal,
+    val deadline: String?
+)

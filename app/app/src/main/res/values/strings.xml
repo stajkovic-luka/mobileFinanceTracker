@@ -25,6 +25,12 @@
     <string name="deadline_optional_label">Rok (opciono)</string>
     <string name="select_date_button">Izaberi</string>
     <string name="save_goal_button">Sacuvaj cilj</string>
+    <string name="edit_goal_title">Izmeni cilj</string>
+    <string name="save_goal_changes_button">Sacuvaj izmene</string>
+    <string name="edit_goal_button">Izmeni cilj</string>
+    <string name="delete_goal_button">Obrisi cilj</string>
+    <string name="delete_goal_title">Obrisi cilj</string>
+    <string name="delete_goal_message">Da li zelite da obrisete ovaj cilj i njegove uplate?</string>
     <string name="deposits_title">Uplate</string>
     <string name="deposits_empty">Nema uplata za ovaj cilj.</string>
     <string name="create_deposit_button">+ Dodaj uplatu</string>

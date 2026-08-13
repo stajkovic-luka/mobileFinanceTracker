@@ -11,6 +11,7 @@ import com.stajkovicluka.financeapp.data.model.Deposit
 import com.stajkovicluka.financeapp.data.model.CreateDepositRequest
 import com.stajkovicluka.financeapp.data.model.UpdateDepositRequest
 import com.stajkovicluka.financeapp.data.model.Goal
+import com.stajkovicluka.financeapp.data.model.UpdateGoalRequest
 import com.stajkovicluka.financeapp.data.repository.DepositsRepository
 import com.stajkovicluka.financeapp.data.repository.GoalsRepository
 import com.stajkovicluka.financeapp.util.TokenManager
@@ -170,6 +171,82 @@ class GoalDetailsViewModel(application: Application) : AndroidViewModel(applicat
                 onSuccess()
             } catch (exception: HttpException) {
                 errorMessage = "Uplatu trenutno nije moguce obrisati."
+            } catch (exception: IOException) {
+                errorMessage = "Nije moguce povezati se sa backend-om."
+            } catch (exception: Exception) {
+                errorMessage = "Doslo je do neocekivane greske."
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun updateGoal(
+        goalId: Long,
+        name: String,
+        targetAmountText: String,
+        deadline: String?,
+        onSuccess: () -> Unit
+    ) {
+        val targetAmount = targetAmountText.replace(',', '.').toBigDecimalOrNull()
+        if (name.trim().isBlank()) {
+            errorMessage = "Unesite naziv cilja."
+            return
+        }
+        if (targetAmount == null || targetAmount <= BigDecimal.ZERO) {
+            errorMessage = "Unesite ciljani iznos veci od nule."
+            return
+        }
+
+        val token = tokenManager.getToken()
+        if (token == null) {
+            errorMessage = "Nema aktivne prijave."
+            return
+        }
+
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            try {
+                goalsRepository.updateGoal(
+                    token = token,
+                    goalId = goalId,
+                    request = UpdateGoalRequest(name.trim(), targetAmount, deadline)
+                )
+                onSuccess()
+            } catch (exception: HttpException) {
+                errorMessage = if (exception.code() == 400) {
+                    "Proverite unete podatke."
+                } else {
+                    "Cilj trenutno nije moguce izmeniti."
+                }
+            } catch (exception: IOException) {
+                errorMessage = "Nije moguce povezati se sa backend-om."
+            } catch (exception: Exception) {
+                errorMessage = "Doslo je do neocekivane greske."
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun deleteGoal(goalId: Long, onSuccess: () -> Unit) {
+        val token = tokenManager.getToken()
+        if (token == null) {
+            errorMessage = "Nema aktivne prijave."
+            return
+        }
+
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            try {
+                goalsRepository.deleteGoal(token, goalId)
+                onSuccess()
+            } catch (exception: HttpException) {
+                errorMessage = "Cilj trenutno nije moguce obrisati."
             } catch (exception: IOException) {
                 errorMessage = "Nije moguce povezati se sa backend-om."
             } catch (exception: Exception) {

@@ -40,6 +40,7 @@ private const val REGISTER_ROUTE = "register"
 private const val GOALS_ROUTE = "goals"
 private const val CREATE_GOAL_ROUTE = "createGoal"
 private const val GOAL_DETAILS_ROUTE = "goalDetails/{goalId}"
+private const val EDIT_GOAL_ROUTE = "editGoal/{goalId}"
 private const val CREATE_DEPOSIT_ROUTE = "createDeposit/{goalId}"
 private const val EDIT_DEPOSIT_ROUTE = "editDeposit/{goalId}/{depositId}"
 
@@ -98,9 +99,13 @@ fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
         composable(CREATE_GOAL_ROUTE) {
             val goalsViewModel: GoalsViewModel = viewModel()
             GoalFormScreen(
-                goalsViewModel = goalsViewModel,
                 onBack = { navController.popBackStack() },
-                onCreateSuccess = {
+                onSave = { name, targetAmount, deadline, onSuccess ->
+                    goalsViewModel.createGoal(name, targetAmount, deadline, onSuccess)
+                },
+                isLoading = goalsViewModel.isLoading,
+                errorMessage = goalsViewModel.errorMessage,
+                onSaveSuccess = {
                     navController.navigate(GOALS_ROUTE) {
                         popUpTo(GOALS_ROUTE) { inclusive = true }
                     }
@@ -117,6 +122,12 @@ fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
                 goalId = goalId,
                 goalDetailsViewModel = goalDetailsViewModel,
                 onBack = { navController.popBackStack() },
+                onEditGoal = { navController.navigate("editGoal/$goalId") },
+                onGoalDeleted = {
+                    navController.navigate(GOALS_ROUTE) {
+                        popUpTo(GOALS_ROUTE) { inclusive = true }
+                    }
+                },
                 onCreateDeposit = { navController.navigate("createDeposit/$goalId") },
                 onEditDeposit = { depositId -> navController.navigate("editDeposit/$goalId/$depositId") },
                 onDepositChanged = {
@@ -125,6 +136,43 @@ fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
                     }
                 }
             )
+        }
+        composable(
+            route = EDIT_GOAL_ROUTE,
+            arguments = listOf(navArgument("goalId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val goalId = backStackEntry.arguments?.getLong("goalId") ?: return@composable
+            val goalDetailsViewModel: GoalDetailsViewModel = viewModel()
+
+            androidx.compose.runtime.LaunchedEffect(goalId) {
+                goalDetailsViewModel.loadDetails(goalId)
+            }
+
+            val goal = goalDetailsViewModel.goal
+            if (goalDetailsViewModel.isLoading) {
+                androidx.compose.material3.CircularProgressIndicator()
+            } else if (goal != null) {
+                GoalFormScreen(
+                    onBack = { navController.popBackStack() },
+                    onSave = { name, targetAmount, deadline, onSuccess ->
+                        goalDetailsViewModel.updateGoal(
+                            goalId,
+                            name,
+                            targetAmount,
+                            deadline,
+                            onSuccess
+                        )
+                    },
+                    onSaveSuccess = {
+                        navController.navigate("goalDetails/$goalId") {
+                            popUpTo(GOAL_DETAILS_ROUTE) { inclusive = true }
+                        }
+                    },
+                    isLoading = goalDetailsViewModel.isLoading,
+                    errorMessage = goalDetailsViewModel.errorMessage,
+                    goalToEdit = goal
+                )
+            }
         }
         composable(
             route = CREATE_DEPOSIT_ROUTE,
