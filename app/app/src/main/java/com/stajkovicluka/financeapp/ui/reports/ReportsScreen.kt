@@ -34,6 +34,7 @@ import com.stajkovicluka.financeapp.data.model.DailyDepositTotal
 import com.stajkovicluka.financeapp.data.model.DepositReportItem
 import com.stajkovicluka.financeapp.data.model.DepositReportResponse
 import com.stajkovicluka.financeapp.data.model.MonthlyDepositTotal
+import com.stajkovicluka.financeapp.util.ReportPdfExporter
 import com.stajkovicluka.financeapp.viewmodel.ReportViewModel
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
@@ -60,7 +61,9 @@ fun ReportsScreen(
     var toForRequest by rememberSaveable { mutableStateOf("") }
     var fromForDisplay by rememberSaveable { mutableStateOf("") }
     var toForDisplay by rememberSaveable { mutableStateOf("") }
+    var exportError by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
+    val exportErrorText = stringResource(R.string.report_export_error)
     val calendar = remember { Calendar.getInstance() }
 
     Surface(modifier = modifier.fillMaxSize()) {
@@ -147,6 +150,32 @@ fun ReportsScreen(
             }
             reportViewModel.report?.let { report ->
                 item { ReportSummary(report, reportViewModel.averagePerGoal) }
+                item {
+                    Button(
+                        onClick = {
+                            try {
+                                ReportPdfExporter.exportAndShare(
+                                    context = context,
+                                    report = report,
+                                    averagePerGoal = reportViewModel.averagePerGoal,
+                                    dailyTotals = reportViewModel.dailyTotals,
+                                    monthlyTotals = reportViewModel.monthlyTotals
+                                )
+                                exportError = null
+                            } catch (exception: Exception) {
+                                exportError = exportErrorText
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.report_export_pdf_button))
+                    }
+                }
+                exportError?.let { message ->
+                    item {
+                        Text(text = message, color = MaterialTheme.colorScheme.error)
+                    }
+                }
                 if (reportViewModel.dailyTotals.isNotEmpty()) {
                     item {
                         Text(

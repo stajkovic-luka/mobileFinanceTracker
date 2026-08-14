@@ -72,6 +72,9 @@
     <string name="report_from_date_label">Od datuma</string>
     <string name="report_to_date_label">Do datuma</string>
     <string name="show_report_button">Prikazi izvestaj</string>
+    <string name="report_export_pdf_button">Izvezi u PDF</string>
+    <string name="report_share_pdf">Podeli PDF izvestaj</string>
+    <string name="report_export_error">Nije moguce napraviti PDF izvestaj.</string>
     <string name="report_total_deposited">Ukupno ustedjeno: %1$s</string>
     <string name="report_average_per_goal">Prosek po cilju: %1$s</string>
     <string name="report_trend_title">Trend uplata</string>

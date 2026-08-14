@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -124,9 +125,13 @@ private fun GoalCard(goal: Goal, onGoalClick: (Long) -> Unit) {
                 text = "${goal.currentAmount} / ${goal.targetAmount}",
                 modifier = Modifier.padding(top = 8.dp)
             )
-            Text(
-                text = "${goal.progressPct}%",
-                modifier = Modifier.padding(top = 4.dp)
+            LinearProgressIndicator(
+                progress = {
+                    (goal.progressPct.toFloat() / 100f).coerceIn(0f, 1f)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
             )
             Text(
                 text = goal.status,
