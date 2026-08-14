@@ -35,6 +35,7 @@ import com.stajkovicluka.financeapp.ui.theme.ThemeMode
 import com.stajkovicluka.financeapp.viewmodel.AuthViewModel
 import com.stajkovicluka.financeapp.viewmodel.GoalsViewModel
 import com.stajkovicluka.financeapp.viewmodel.GoalDetailsViewModel
+import com.stajkovicluka.financeapp.viewmodel.ReportViewModel
 
 // Definise rute i prelazak korisnika izmedju Compose ekrana.
 private const val WELCOME_ROUTE = "welcome"
@@ -146,6 +147,7 @@ fun AppNavigation(
             }
         }
         composable(REPORTS_ROUTE) {
+            val reportViewModel: ReportViewModel = viewModel()
             AppShell(
                 selectedDestination = AppDestination.REPORTS,
                 themeMode = themeMode,
@@ -161,7 +163,10 @@ fun AppNavigation(
                     }
                 }
             ) { paddingValues ->
-                ReportsScreen(modifier = Modifier.padding(paddingValues))
+                ReportsScreen(
+                    reportViewModel = reportViewModel,
+                    modifier = Modifier.padding(paddingValues)
+                )
             }
         }
         composable(CREATE_GOAL_ROUTE) {

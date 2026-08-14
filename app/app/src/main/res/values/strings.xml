@@ -63,5 +63,10 @@
     <string name="theme_dark">Tamna tema</string>
     <string name="logout_button">Odjavi se</string>
     <string name="reports_title">Izvestaji</string>
-    <string name="reports_placeholder_message">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</string>
+    <string name="report_from_date_label">Od datuma</string>
+    <string name="report_to_date_label">Do datuma</string>
+    <string name="show_report_button">Prikazi izvestaj</string>
+    <string name="report_total_deposited">Ukupno ustedjeno: %1$s</string>
+    <string name="report_deposits_title">Uplate u periodu</string>
+    <string name="report_deposits_empty">Nema uplata za izabrani period.</string>
 </resources>
