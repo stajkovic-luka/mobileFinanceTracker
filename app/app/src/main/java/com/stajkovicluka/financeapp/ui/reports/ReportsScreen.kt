@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -17,6 +18,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,10 +30,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.stajkovicluka.financeapp.R
+import com.stajkovicluka.financeapp.data.model.DailyDepositTotal
 import com.stajkovicluka.financeapp.data.model.DepositReportItem
 import com.stajkovicluka.financeapp.data.model.DepositReportResponse
+import com.stajkovicluka.financeapp.data.model.MonthlyDepositTotal
 import com.stajkovicluka.financeapp.viewmodel.ReportViewModel
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianValueFormatter
+import com.patrykandpatrick.vico.compose.cartesian.data.columnModel
+import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.common.ProvideVicoTheme
+import com.patrykandpatrick.vico.compose.m3.common.rememberM3VicoTheme
 import java.util.Calendar
+import java.math.BigDecimal
 
 // Omogucava izbor perioda i prikaz izvestaja uplata.
 @Composable
@@ -129,7 +146,30 @@ fun ReportsScreen(
                 }
             }
             reportViewModel.report?.let { report ->
-                item { ReportSummary(report) }
+                item { ReportSummary(report, reportViewModel.averagePerGoal) }
+                if (reportViewModel.dailyTotals.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.report_trend_title),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    item { DailyTotalsChart(reportViewModel.dailyTotals) }
+                }
+                if (reportViewModel.monthlyTotals.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = stringResource(
+                                R.string.report_monthly_trend_title,
+                                reportViewModel.monthlyTotals.first().month.take(4)
+                            ),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    item { MonthlyTotalsChart(reportViewModel.monthlyTotals) }
+                }
                 item {
                     Text(
                         text = stringResource(R.string.report_deposits_title),
@@ -150,7 +190,7 @@ fun ReportsScreen(
 }
 
 @Composable
-private fun ReportSummary(report: DepositReportResponse) {
+private fun ReportSummary(report: DepositReportResponse, averagePerGoal: BigDecimal) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -161,6 +201,80 @@ private fun ReportSummary(report: DepositReportResponse) {
             Text(
                 text = stringResource(R.string.report_total_deposited, report.totalDeposited.toPlainString()),
                 modifier = Modifier.padding(top = 8.dp)
+            )
+            Text(
+                text = stringResource(R.string.report_average_per_goal, averagePerGoal.toPlainString()),
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun DailyTotalsChart(dailyTotals: List<DailyDepositTotal>) {
+    val modelProducer = remember { CartesianChartModelProducer() }
+    val dateFormatter = remember(dailyTotals) {
+        CartesianValueFormatter { _, value, _ ->
+            dailyTotals.getOrNull(value.toInt())?.date?.let(::formatDate).orEmpty()
+        }
+    }
+
+    LaunchedEffect(dailyTotals) {
+        modelProducer.runTransaction {
+            columnModel {
+                series(dailyTotals.map { it.totalAmount.toDouble() })
+            }
+        }
+    }
+
+    Card(modifier = Modifier.fillMaxWidth()) {
+        ProvideVicoTheme(rememberM3VicoTheme()) {
+            CartesianChartHost(
+                chart = rememberCartesianChart(
+                    rememberColumnCartesianLayer(),
+                    startAxis = VerticalAxis.rememberStart(),
+                    bottomAxis = HorizontalAxis.rememberBottom(valueFormatter = dateFormatter)
+                ),
+                modelProducer = modelProducer,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)
+                    .padding(16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun MonthlyTotalsChart(monthlyTotals: List<MonthlyDepositTotal>) {
+    val modelProducer = remember { CartesianChartModelProducer() }
+    val monthFormatter = remember(monthlyTotals) {
+        CartesianValueFormatter { _, value, _ ->
+            monthlyTotals.getOrNull(value.toInt())?.month?.let(::formatMonth).orEmpty()
+        }
+    }
+
+    LaunchedEffect(monthlyTotals) {
+        modelProducer.runTransaction {
+            lineModel {
+                series(monthlyTotals.map { it.totalAmount.toDouble() })
+            }
+        }
+    }
+
+    Card(modifier = Modifier.fillMaxWidth()) {
+        ProvideVicoTheme(rememberM3VicoTheme()) {
+            CartesianChartHost(
+                chart = rememberCartesianChart(
+                    rememberLineCartesianLayer(),
+                    startAxis = VerticalAxis.rememberStart(),
+                    bottomAxis = HorizontalAxis.rememberBottom(valueFormatter = monthFormatter)
+                ),
+                modelProducer = modelProducer,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)
+                    .padding(16.dp)
             )
         }
     }
@@ -191,4 +305,22 @@ private fun formatDateForDisplay(day: Int, month: Int, year: Int): String {
 private fun formatDate(date: String): String {
     val parts = date.substringBefore("T").split("-")
     return if (parts.size == 3) "${parts[2]}.${parts[1]}.${parts[0]}" else date
+}
+
+private fun formatMonth(month: String): String {
+    return when (month.substringAfter("-")) {
+        "01" -> "Jan"
+        "02" -> "Feb"
+        "03" -> "Mar"
+        "04" -> "Apr"
+        "05" -> "Maj"
+        "06" -> "Jun"
+        "07" -> "Jul"
+        "08" -> "Avg"
+        "09" -> "Sep"
+        "10" -> "Okt"
+        "11" -> "Nov"
+        "12" -> "Dec"
+        else -> month
+    }
 }

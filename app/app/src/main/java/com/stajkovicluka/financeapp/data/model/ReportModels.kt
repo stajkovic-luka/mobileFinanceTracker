@@ -18,3 +18,15 @@ data class DepositReportItem(
     val note: String?,
     val createdAt: String
 )
+
+// Predstavlja zbir uplata za jedan dan, potreban za prikaz trenda.
+data class DailyDepositTotal(
+    val date: String,
+    val totalAmount: BigDecimal
+)
+
+// Predstavlja zbir uplata za jedan mesec, potreban za godisnji trend.
+data class MonthlyDepositTotal(
+    val month: String,
+    val totalAmount: BigDecimal
+)

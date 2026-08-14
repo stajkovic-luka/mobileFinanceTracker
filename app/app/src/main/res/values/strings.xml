@@ -47,6 +47,7 @@
     <string name="cancel_button">Otkazi</string>
     <string name="home_title">Dobrodosao, %1$s</string>
     <string name="home_goals_button">Pogledaj ciljeve</string>
+    <string name="mascot_content_description">SQRL maskota</string>
     <string name="home_navigation_label">Home</string>
     <string name="goals_navigation_label">Goals</string>
     <string name="reports_navigation_label">Izvestaji</string>
@@ -54,6 +55,7 @@
     <string name="create_goal_menu_item">Kreiraj cilj</string>
     <string name="menu_title">Meni</string>
     <string name="menu_content_description">Otvori meni</string>
+    <string name="acorn_content_description">Zir</string>
     <string name="profile_title">Profil</string>
     <string name="profile_placeholder_message">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</string>
     <string name="close_button">Zatvori</string>
@@ -67,6 +69,9 @@
     <string name="report_to_date_label">Do datuma</string>
     <string name="show_report_button">Prikazi izvestaj</string>
     <string name="report_total_deposited">Ukupno ustedjeno: %1$s</string>
+    <string name="report_average_per_goal">Prosek po cilju: %1$s</string>
+    <string name="report_trend_title">Trend uplata</string>
+    <string name="report_monthly_trend_title">Uplate po mesecima (%1$s)</string>
     <string name="report_deposits_title">Uplate u periodu</string>
     <string name="report_deposits_empty">Nema uplata za izabrani period.</string>
 </resources>
