@@ -33,7 +33,7 @@ class UserService(private val repo: UserRepo, private val passwordEncoder: Passw
 
         val token = jwtService.generateToken(savedUser.username!!)
 
-        return AuthResponse(token,savedUser.username!!, savedUser.email!!)
+        return AuthResponse(token, savedUser.username!!, savedUser.email!!, savedUser.name!!)
     }
 
     // Proverava kredencijale i vraca JWT - pada sa 401 pri neslaganju
@@ -46,7 +46,7 @@ class UserService(private val repo: UserRepo, private val passwordEncoder: Passw
 
         val token = jwtService.generateToken(user.username!!)
 
-        return AuthResponse(token,user.username!!,user.email!!)
+        return AuthResponse(token, user.username!!, user.email!!, user.name!!)
 
     }
 

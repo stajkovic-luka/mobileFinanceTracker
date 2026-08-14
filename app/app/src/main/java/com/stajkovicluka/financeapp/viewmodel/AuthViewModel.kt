@@ -17,6 +17,7 @@ import java.io.IOException
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = AuthRepository(ApiClient.api)
     private val tokenManager = TokenManager(application.applicationContext)
+    var userName by mutableStateOf(tokenManager.getUserName().orEmpty())
     var username by mutableStateOf("")
     var password by mutableStateOf("")
     var firstName by mutableStateOf("")
@@ -29,6 +30,14 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     var errorMessage by mutableStateOf<String?>(null)
 
     fun clearError() {
+        errorMessage = null
+    }
+
+    fun logout() {
+        tokenManager.clearToken()
+        userName = ""
+        username = ""
+        password = ""
         errorMessage = null
     }
 
@@ -45,6 +54,8 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val response = repository.login(username, password)
                 tokenManager.saveToken(response.token)
+                tokenManager.saveUserName(response.name)
+                userName = response.name
                 onSuccess()
             } catch (exception: HttpException) {
                 errorMessage = if (exception.code() == 401) {
@@ -96,6 +107,8 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                     password = registerPassword
                 )
                 tokenManager.saveToken(response.token)
+                tokenManager.saveUserName(response.name)
+                userName = response.name
                 onSuccess()
             } catch (exception: HttpException) {
                 errorMessage = if (exception.code() == 400) {

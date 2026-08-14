@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,19 +28,19 @@ import com.stajkovicluka.financeapp.viewmodel.GoalsViewModel
 @Composable
 fun GoalsScreen(
     goalsViewModel: GoalsViewModel,
-    onCreateGoal: () -> Unit,
-    onGoalClick: (Long) -> Unit
+    onGoalClick: (Long) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     LaunchedEffect(Unit) {
         goalsViewModel.loadGoals()
     }
 
-    Surface(modifier = Modifier.fillMaxSize()) {
+    Surface(modifier = modifier.fillMaxSize()) {
         when {
             goalsViewModel.isLoading -> LoadingContent()
             goalsViewModel.errorMessage != null -> MessageContent(goalsViewModel.errorMessage!!)
-            goalsViewModel.goals.isEmpty() -> EmptyGoalsContent(onCreateGoal)
-            else -> GoalsList(goalsViewModel.goals, onCreateGoal, onGoalClick)
+            goalsViewModel.goals.isEmpty() -> EmptyGoalsContent()
+            else -> GoalsList(goalsViewModel.goals, onGoalClick)
         }
     }
 }
@@ -49,7 +48,6 @@ fun GoalsScreen(
 @Composable
 private fun GoalsList(
     goals: List<Goal>,
-    onCreateGoal: () -> Unit,
     onGoalClick: (Long) -> Unit
 ) {
     LazyColumn(
@@ -65,12 +63,6 @@ private fun GoalsList(
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
-                Button(
-                    onClick = onCreateGoal,
-                    modifier = Modifier.padding(top = 12.dp)
-                ) {
-                    Text(stringResource(R.string.create_goal_button))
-                }
             }
         }
         items(goals, key = { it.id }) { goal ->
@@ -80,18 +72,15 @@ private fun GoalsList(
 }
 
 @Composable
-private fun EmptyGoalsContent(onCreateGoal: () -> Unit) {
+private fun EmptyGoalsContent() {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    ) {
-        Text(text = stringResource(R.string.goals_empty), style = MaterialTheme.typography.bodyLarge)
-        Button(onClick = onCreateGoal, modifier = Modifier.padding(top = 16.dp)) {
-            Text(stringResource(R.string.create_goal_button))
-        }
+        ) {
+            Text(text = stringResource(R.string.goals_empty), style = MaterialTheme.typography.bodyLarge)
     }
 }
 

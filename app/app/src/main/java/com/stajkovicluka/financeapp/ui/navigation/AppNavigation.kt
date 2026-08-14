@@ -29,6 +29,9 @@ import com.stajkovicluka.financeapp.ui.goals.GoalsScreen
 import com.stajkovicluka.financeapp.ui.goals.GoalFormScreen
 import com.stajkovicluka.financeapp.ui.goals.GoalDetailsScreen
 import com.stajkovicluka.financeapp.ui.deposits.DepositFormScreen
+import com.stajkovicluka.financeapp.ui.home.HomeScreen
+import com.stajkovicluka.financeapp.ui.reports.ReportsScreen
+import com.stajkovicluka.financeapp.ui.theme.ThemeMode
 import com.stajkovicluka.financeapp.viewmodel.AuthViewModel
 import com.stajkovicluka.financeapp.viewmodel.GoalsViewModel
 import com.stajkovicluka.financeapp.viewmodel.GoalDetailsViewModel
@@ -37,7 +40,9 @@ import com.stajkovicluka.financeapp.viewmodel.GoalDetailsViewModel
 private const val WELCOME_ROUTE = "welcome"
 private const val LOGIN_ROUTE = "login"
 private const val REGISTER_ROUTE = "register"
+private const val HOME_ROUTE = "home"
 private const val GOALS_ROUTE = "goals"
+private const val REPORTS_ROUTE = "reports"
 private const val CREATE_GOAL_ROUTE = "createGoal"
 private const val GOAL_DETAILS_ROUTE = "goalDetails/{goalId}"
 private const val EDIT_GOAL_ROUTE = "editGoal/{goalId}"
@@ -45,7 +50,12 @@ private const val CREATE_DEPOSIT_ROUTE = "createDeposit/{goalId}"
 private const val EDIT_DEPOSIT_ROUTE = "editDeposit/{goalId}/{depositId}"
 
 @Composable
-fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
+fun AppNavigation(
+    authViewModel: AuthViewModel,
+    themeMode: ThemeMode,
+    onThemeModeChanged: (ThemeMode) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val navController = rememberNavController()
 
     NavHost(
@@ -68,7 +78,7 @@ fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
                     navController.navigate(REGISTER_ROUTE)
                 },
                 onLoginSuccess = {
-                    navController.navigate(GOALS_ROUTE) {
+                    navController.navigate(HOME_ROUTE) {
                         popUpTo(WELCOME_ROUTE) { inclusive = true }
                     }
                 }
@@ -82,19 +92,77 @@ fun AppNavigation(authViewModel: AuthViewModel, modifier: Modifier = Modifier) {
                     navController.popBackStack()
                 },
                 onRegisterSuccess = {
-                    navController.navigate(GOALS_ROUTE) {
+                    navController.navigate(HOME_ROUTE) {
                         popUpTo(WELCOME_ROUTE) { inclusive = true }
                     }
                 }
             )
         }
+        composable(HOME_ROUTE) {
+            AppShell(
+                selectedDestination = AppDestination.HOME,
+                themeMode = themeMode,
+                onThemeModeChanged = onThemeModeChanged,
+                onHomeClick = { },
+                onGoalsClick = { navController.navigate(GOALS_ROUTE) },
+                onReportsClick = { navController.navigate(REPORTS_ROUTE) },
+                onCreateGoal = { navController.navigate(CREATE_GOAL_ROUTE) },
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(LOGIN_ROUTE) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            ) { paddingValues ->
+                HomeScreen(
+                    userName = authViewModel.userName,
+                    onShowGoals = { navController.navigate(GOALS_ROUTE) },
+                    modifier = Modifier.padding(paddingValues)
+                )
+            }
+        }
         composable(GOALS_ROUTE) {
             val goalsViewModel: GoalsViewModel = viewModel()
-            GoalsScreen(
-                goalsViewModel = goalsViewModel,
+            AppShell(
+                selectedDestination = AppDestination.GOALS,
+                themeMode = themeMode,
+                onThemeModeChanged = onThemeModeChanged,
+                onHomeClick = { navController.navigate(HOME_ROUTE) },
+                onGoalsClick = { },
+                onReportsClick = { navController.navigate(REPORTS_ROUTE) },
                 onCreateGoal = { navController.navigate(CREATE_GOAL_ROUTE) },
-                onGoalClick = { goalId -> navController.navigate("goalDetails/$goalId") }
-            )
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(LOGIN_ROUTE) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            ) { paddingValues ->
+                GoalsScreen(
+                    goalsViewModel = goalsViewModel,
+                    onGoalClick = { goalId -> navController.navigate("goalDetails/$goalId") },
+                    modifier = Modifier.padding(paddingValues)
+                )
+            }
+        }
+        composable(REPORTS_ROUTE) {
+            AppShell(
+                selectedDestination = AppDestination.REPORTS,
+                themeMode = themeMode,
+                onThemeModeChanged = onThemeModeChanged,
+                onHomeClick = { navController.navigate(HOME_ROUTE) },
+                onGoalsClick = { navController.navigate(GOALS_ROUTE) },
+                onReportsClick = { },
+                onCreateGoal = { navController.navigate(CREATE_GOAL_ROUTE) },
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(LOGIN_ROUTE) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            ) { paddingValues ->
+                ReportsScreen(modifier = Modifier.padding(paddingValues))
+            }
         }
         composable(CREATE_GOAL_ROUTE) {
             val goalsViewModel: GoalsViewModel = viewModel()

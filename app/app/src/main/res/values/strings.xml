@@ -18,7 +18,6 @@
     <string name="back_button">← Nazad</string>
     <string name="goals_title">Moji ciljevi</string>
     <string name="goals_empty">Nemate sacuvane ciljeve.</string>
-    <string name="create_goal_button">+ Novi cilj</string>
     <string name="create_goal_title">Novi cilj</string>
     <string name="goal_name_label">Naziv cilja</string>
     <string name="target_amount_label">Ciljani iznos</string>
@@ -46,4 +45,23 @@
     <string name="delete_deposit_message">Da li zelite da obrisete ovu uplatu?</string>
     <string name="delete_button">Obrisi</string>
     <string name="cancel_button">Otkazi</string>
+    <string name="home_title">Dobrodosao, %1$s</string>
+    <string name="home_goals_button">Pogledaj ciljeve</string>
+    <string name="home_navigation_label">Home</string>
+    <string name="goals_navigation_label">Goals</string>
+    <string name="reports_navigation_label">Izvestaji</string>
+    <string name="add_navigation_label">Dodaj</string>
+    <string name="create_goal_menu_item">Kreiraj cilj</string>
+    <string name="menu_title">Meni</string>
+    <string name="menu_content_description">Otvori meni</string>
+    <string name="profile_title">Profil</string>
+    <string name="profile_placeholder_message">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</string>
+    <string name="close_button">Zatvori</string>
+    <string name="theme_title">Tema</string>
+    <string name="theme_system">Sistemska tema</string>
+    <string name="theme_light">Svetla tema</string>
+    <string name="theme_dark">Tamna tema</string>
+    <string name="logout_button">Odjavi se</string>
+    <string name="reports_title">Izvestaji</string>
+    <string name="reports_placeholder_message">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</string>
 </resources>
