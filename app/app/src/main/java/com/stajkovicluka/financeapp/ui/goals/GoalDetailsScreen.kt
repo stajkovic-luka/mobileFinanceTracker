@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,6 +83,12 @@ private fun DetailsContent(
 ) {
     var showDeleteGoalDialog by remember { mutableStateOf(false) }
     var depositToDelete by remember { mutableStateOf<Deposit?>(null) }
+    var newestFirst by rememberSaveable { mutableStateOf(true) }
+    val sortedDeposits = if (newestFirst) {
+        deposits.sortedByDescending { it.createdAt }
+    } else {
+        deposits.sortedBy { it.createdAt }
+    }
 
     if (showDeleteGoalDialog) {
         AlertDialog(
@@ -163,6 +170,17 @@ private fun DetailsContent(
                 ) {
                     Text(stringResource(R.string.create_deposit_button))
                 }
+                TextButton(onClick = { newestFirst = !newestFirst }) {
+                    val sortOrder = if (newestFirst) {
+                        R.string.sort_newest_first
+                    } else {
+                        R.string.sort_oldest_first
+                    }
+                    Text(
+                        text = "${stringResource(R.string.sort_deposits_label)} " +
+                            stringResource(sortOrder)
+                    )
+                }
             }
         }
         if (deposits.isEmpty()) {
@@ -170,7 +188,7 @@ private fun DetailsContent(
                 Text(stringResource(R.string.deposits_empty))
             }
         } else {
-            items(deposits, key = { it.id }) { deposit ->
+            items(sortedDeposits, key = { it.id }) { deposit ->
                 DepositCard(
                     deposit = deposit,
                     onEdit = { onEditDeposit(deposit.id) },

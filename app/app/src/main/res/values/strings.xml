@@ -18,6 +18,7 @@
     <string name="back_button">← Nazad</string>
     <string name="goals_title">Moji ciljevi</string>
     <string name="goals_empty">Nemate sacuvane ciljeve.</string>
+    <string name="sort_goals_label">Sortiraj:</string>
     <string name="create_goal_title">Novi cilj</string>
     <string name="goal_name_label">Naziv cilja</string>
     <string name="target_amount_label">Ciljani iznos</string>
@@ -32,6 +33,9 @@
     <string name="delete_goal_message">Da li zelite da obrisete ovaj cilj i njegove uplate?</string>
     <string name="deposits_title">Uplate</string>
     <string name="deposits_empty">Nema uplata za ovaj cilj.</string>
+    <string name="sort_deposits_label">Sortiraj:</string>
+    <string name="sort_newest_first">Najnovije prvo</string>
+    <string name="sort_oldest_first">Najstarije prvo</string>
     <string name="create_deposit_button">+ Dodaj uplatu</string>
     <string name="create_deposit_title">Nova uplata</string>
     <string name="deposit_amount_label">Iznos uplate</string>

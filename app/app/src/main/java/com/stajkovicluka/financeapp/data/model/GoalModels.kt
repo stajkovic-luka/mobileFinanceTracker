@@ -10,7 +10,8 @@ data class Goal(
     val currentAmount: BigDecimal,
     val progressPct: BigDecimal,
     val deadline: String?,
-    val status: String
+    val status: String,
+    val createdAt: String
 )
 
 data class CreateGoalRequest(

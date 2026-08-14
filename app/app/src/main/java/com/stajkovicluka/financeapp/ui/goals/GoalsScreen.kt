@@ -13,8 +13,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -50,6 +55,13 @@ private fun GoalsList(
     goals: List<Goal>,
     onGoalClick: (Long) -> Unit
 ) {
+    var newestFirst by rememberSaveable { mutableStateOf(true) }
+    val sortedGoals = if (newestFirst) {
+        goals.sortedByDescending { it.createdAt }
+    } else {
+        goals.sortedBy { it.createdAt }
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -63,9 +75,20 @@ private fun GoalsList(
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
+                TextButton(onClick = { newestFirst = !newestFirst }) {
+                    val sortOrder = if (newestFirst) {
+                        R.string.sort_newest_first
+                    } else {
+                        R.string.sort_oldest_first
+                    }
+                    Text(
+                        text = "${stringResource(R.string.sort_goals_label)} " +
+                            stringResource(sortOrder)
+                    )
+                }
             }
         }
-        items(goals, key = { it.id }) { goal ->
+        items(sortedGoals, key = { it.id }) { goal ->
             GoalCard(goal, onGoalClick)
         }
     }

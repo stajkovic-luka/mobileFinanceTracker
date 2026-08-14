@@ -117,7 +117,8 @@ class GoalService(
             currentAmount = goal.currentAmount,
             progressPct = progress,
             deadline = goal.deadline,
-            status = goal.status
+            status = goal.status,
+            createdAt = goal.createdAt!!
         )
     }
 }
