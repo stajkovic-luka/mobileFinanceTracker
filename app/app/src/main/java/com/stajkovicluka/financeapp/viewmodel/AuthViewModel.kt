@@ -54,7 +54,12 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val response = repository.login(username, password)
                 tokenManager.saveToken(response.token)
-                tokenManager.saveUserName(response.name)
+                tokenManager.saveUserData(
+                    response.name,
+                    response.username,
+                    response.email,
+                    response.createdAt
+                )
                 userName = response.name
                 onSuccess()
             } catch (exception: HttpException) {
@@ -107,7 +112,12 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                     password = registerPassword
                 )
                 tokenManager.saveToken(response.token)
-                tokenManager.saveUserName(response.name)
+                tokenManager.saveUserData(
+                    response.name,
+                    response.username,
+                    response.email,
+                    response.createdAt
+                )
                 userName = response.name
                 onSuccess()
             } catch (exception: HttpException) {

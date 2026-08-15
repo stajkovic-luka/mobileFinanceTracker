@@ -31,6 +31,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val quote = remember { MotivationalQuotes.randomQuote() }
+    val firstName = userName.trim().substringBefore(" ")
 
     Surface(modifier = modifier.fillMaxSize()) {
         Column(
@@ -41,7 +42,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = stringResource(R.string.home_title, userName),
+                text = stringResource(R.string.home_title, firstName),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )

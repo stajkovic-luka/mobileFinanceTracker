@@ -1,12 +1,11 @@
 package com.stajkovicluka.financeapp.ui.navigation
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,6 +33,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
@@ -49,14 +49,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.stajkovicluka.financeapp.R
 import com.stajkovicluka.financeapp.ui.theme.ThemeMode
+import com.stajkovicluka.financeapp.util.TokenManager
 import kotlinx.coroutines.launch
 
 // Zajednicki raspored za glavne ekrane prijavljenog korisnika.
@@ -75,14 +76,43 @@ fun AppShell(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val tokenManager = remember(context) { TokenManager(context) }
     var plusMenuVisible by remember { mutableStateOf(false) }
     var profileDialogVisible by remember { mutableStateOf(false) }
+
+    val navigationItemColors = NavigationBarItemDefaults.colors(
+        selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+        selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+        indicatorColor = MaterialTheme.colorScheme.primary,
+        unselectedIconColor = MaterialTheme.colorScheme.onSecondary,
+        unselectedTextColor = MaterialTheme.colorScheme.onSecondary
+    )
 
     if (profileDialogVisible) {
         AlertDialog(
             onDismissRequest = { profileDialogVisible = false },
             title = { Text(stringResource(R.string.profile_title)) },
-            text = { Text(stringResource(R.string.profile_placeholder_message)) },
+            text = {
+                Column {
+                    ProfileDataRow(
+                        stringResource(R.string.profile_name_label),
+                        tokenManager.getUserName()
+                    )
+                    ProfileDataRow(
+                        stringResource(R.string.profile_username_label),
+                        tokenManager.getUsername()
+                    )
+                    ProfileDataRow(
+                        stringResource(R.string.profile_email_label),
+                        tokenManager.getEmail()
+                    )
+                    ProfileDataRow(
+                        stringResource(R.string.profile_created_at_label),
+                        formatProfileDate(tokenManager.getCreatedAt())
+                    )
+                }
+            },
             confirmButton = {
                 TextButton(onClick = { profileDialogVisible = false }) {
                     Text(stringResource(R.string.close_button))
@@ -204,41 +234,42 @@ fun AppShell(
                 )
             },
             bottomBar = {
-                NavigationBar {
-                    NavigationBarItem(
-                        selected = selectedDestination == AppDestination.HOME,
-                        onClick = onHomeClick,
-                        icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                        label = { Text(stringResource(R.string.home_navigation_label)) }
-                    )
-                    NavigationBarItem(
-                        selected = selectedDestination == AppDestination.GOALS,
-                        onClick = onGoalsClick,
-                        icon = { Icon(Icons.Default.Flag, contentDescription = null) },
-                        label = { Text(stringResource(R.string.goals_navigation_label)) }
-                    )
-                    Box(
-                        modifier = Modifier.weight(1f),
-                        contentAlignment = Alignment.Center
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    NavigationBar(containerColor = MaterialTheme.colorScheme.secondary) {
+                        NavigationBarItem(
+                            selected = selectedDestination == AppDestination.HOME,
+                            onClick = onHomeClick,
+                            icon = { Icon(Icons.Default.Home, contentDescription = null) },
+                            label = { Text(stringResource(R.string.home_navigation_label)) },
+                            colors = navigationItemColors
+                        )
+                        NavigationBarItem(
+                            selected = selectedDestination == AppDestination.GOALS,
+                            onClick = onGoalsClick,
+                            icon = { Icon(Icons.Default.Flag, contentDescription = null) },
+                            label = { Text(stringResource(R.string.goals_navigation_label)) },
+                            colors = navigationItemColors
+                        )
+                        NavigationBarItem(
+                            selected = false,
+                            onClick = { plusMenuVisible = true },
+                            icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                            label = { Text(stringResource(R.string.add_navigation_label)) },
+                            colors = navigationItemColors
+                        )
+                        NavigationBarItem(
+                            selected = selectedDestination == AppDestination.REPORTS,
+                            onClick = onReportsClick,
+                            icon = { Icon(Icons.Default.BarChart, contentDescription = null) },
+                            label = { Text(stringResource(R.string.reports_navigation_label)) },
+                            colors = navigationItemColors
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = plusMenuVisible,
+                        onDismissRequest = { plusMenuVisible = false },
+                        modifier = Modifier.align(Alignment.BottomCenter)
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .clickable { plusMenuVisible = true }
-                                .padding(vertical = 12.dp, horizontal = 24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Icon(Icons.Default.Add, contentDescription = null)
-                            Text(
-                                text = stringResource(R.string.add_navigation_label),
-                                style = MaterialTheme.typography.labelMedium,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                        DropdownMenu(
-                            expanded = plusMenuVisible,
-                            onDismissRequest = { plusMenuVisible = false }
-                        ) {
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.create_goal_menu_item)) },
                             onClick = {
@@ -246,19 +277,32 @@ fun AppShell(
                                 onCreateGoal()
                             }
                         )
-                        }
                     }
-                    NavigationBarItem(
-                        selected = selectedDestination == AppDestination.REPORTS,
-                        onClick = onReportsClick,
-                        icon = { Icon(Icons.Default.BarChart, contentDescription = null) },
-                        label = { Text(stringResource(R.string.reports_navigation_label)) }
-                    )
                 }
             },
             content = content
         )
     }
+}
+
+// Prikazuje jednu informaciju o prijavljenom korisniku u profilu.
+@Composable
+private fun ProfileDataRow(label: String, value: String?) {
+    Text(
+        text = label,
+        style = MaterialTheme.typography.labelMedium,
+        modifier = Modifier.padding(top = 8.dp)
+    )
+    Text(
+        text = value?.takeIf { it.isNotBlank() } ?: "-",
+        style = MaterialTheme.typography.bodyLarge
+    )
+}
+
+// Pretvara datum iz backend odgovora u evropski format.
+private fun formatProfileDate(createdAt: String?): String {
+    val parts = createdAt.orEmpty().substringBefore("T").split("-")
+    return if (parts.size == 3) "${parts[2]}.${parts[1]}.${parts[0]}" else "-"
 }
 
 // Oznacava aktivnu stavku donje navigacije.
