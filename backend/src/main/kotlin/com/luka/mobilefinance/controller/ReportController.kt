@@ -12,10 +12,10 @@ import java.time.LocalDate
 
 @RestController
 @RequestMapping("/reports")
-// Prima zahteve za izvestaje prijavljenog korisnika.
+// Prima zahteve za izvestaje prijavljenog korisnika
 class ReportController(private val reportService: ReportService) {
 
-    // Vraca izvestaj uplata za prosledjeni vremenski period.
+    // Vraca izvestaj uplata za prosledjeni vremenski period
     @GetMapping("/deposits")
     fun getDepositReport(
         @RequestAttribute("username") username: String,

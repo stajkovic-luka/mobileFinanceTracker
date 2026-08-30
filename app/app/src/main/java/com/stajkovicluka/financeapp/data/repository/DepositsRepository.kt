@@ -5,7 +5,7 @@ import com.stajkovicluka.financeapp.data.model.Deposit
 import com.stajkovicluka.financeapp.data.model.CreateDepositRequest
 import com.stajkovicluka.financeapp.data.model.UpdateDepositRequest
 
-// Poziva endpoint-e za kreiranje, izmenu i brisanje uplata.
+// Poziva endpoint-e za kreiranje, izmenu i brisanje uplata
 class DepositsRepository(private val api: FinanceApi) {
     suspend fun getDeposits(token: String, goalId: Long): List<Deposit> {
         return api.getDeposits("Bearer $token", goalId)

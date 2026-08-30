@@ -1,7 +1,15 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
 }
+
+// Bazna adresa backend-a dolazi iz local.properties, a dev.sh je azurira pre svakog builda
+val baseUrl: String = Properties().apply {
+    val properties = rootProject.file("local.properties")
+    if (properties.exists()) properties.inputStream().use { load(it) }
+}.getProperty("baseUrl") ?: "http://192.168.0.3:8080/"
 
 android {
     namespace = "com.stajkovicluka.financeapp"
@@ -17,6 +25,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
 
     buildTypes {
@@ -32,6 +42,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

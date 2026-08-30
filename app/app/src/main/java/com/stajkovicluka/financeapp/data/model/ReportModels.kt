@@ -2,7 +2,7 @@ package com.stajkovicluka.financeapp.data.model
 
 import java.math.BigDecimal
 
-// Sadrzi podatke koje backend vraca za izabrani period izvestaja.
+// Sadrzi podatke koje backend vraca za izabrani period izvestaja
 data class DepositReportResponse(
     val from: String,
     val to: String,
@@ -19,13 +19,13 @@ data class DepositReportItem(
     val createdAt: String
 )
 
-// Predstavlja zbir uplata za jedan dan, potreban za prikaz trenda.
+// Predstavlja zbir uplata za jedan dan, potreban za prikaz trenda
 data class DailyDepositTotal(
     val date: String,
     val totalAmount: BigDecimal
 )
 
-// Predstavlja zbir uplata za jedan mesec, potreban za godisnji trend.
+// Predstavlja zbir uplata za jedan mesec, potreban za godisnji trend
 data class MonthlyDepositTotal(
     val month: String,
     val totalAmount: BigDecimal

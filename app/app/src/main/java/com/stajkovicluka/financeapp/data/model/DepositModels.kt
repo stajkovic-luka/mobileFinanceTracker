@@ -2,7 +2,7 @@ package com.stajkovicluka.financeapp.data.model
 
 import java.math.BigDecimal
 
-// Sadrzi Kotlin modele za podatke i zahteve vezane za uplate.
+// Sadrzi Kotlin modele za podatke i zahteve vezane za uplate
 data class Deposit(
     val id: Long,
     val amount: BigDecimal,

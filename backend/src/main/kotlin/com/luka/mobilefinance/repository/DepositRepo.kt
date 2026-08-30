@@ -8,16 +8,16 @@ import org.springframework.stereotype.Repository
 import java.util.Date
 
 @Repository
-// Komunikacija sa deposits tabelom u bazi.
+// Komunikacija sa deposits tabelom u bazi
 interface DepositRepo : JpaRepository<Deposit, Long> {
 
-    // Vraca uplate jednog cilja od najstarije ka najnovijoj.
+    // Vraca uplate jednog cilja od najstarije ka najnovijoj
     fun findAllByGoalIdOrderByCreatedAtAsc(goalId: Long): List<Deposit>
 
-    // Nalazi uplatu samo ako pripada prosledjenom cilju.
+    // Nalazi uplatu samo ako pripada prosledjenom cilju
     fun findByIdAndGoalId(id: Long, goalId: Long): Deposit?
 
-    // Vraca uplate svih ciljeva jednog korisnika unutar vremenskog perioda.
+    // Vraca uplate svih ciljeva jednog korisnika unutar vremenskog perioda
     @Query("""
         SELECT d
         FROM Deposit d

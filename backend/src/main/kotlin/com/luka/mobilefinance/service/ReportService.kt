@@ -14,13 +14,13 @@ import java.time.ZoneId
 import java.util.Date
 
 @Service
-// Sadrzi poslovnu logiku za izvestaje uplata prijavljenog korisnika.
+// Poslovna logika za izvestaje uplata
 class ReportService(
     private val depositRepo: DepositRepo,
     private val userRepo: UserRepo
 ) {
 
-    // Vraca sve uplate prijavljenog korisnika izmedju dva datuma.
+    // Vraca sve uplate prijavljenog korisnika izmedju dva datuma
     @Transactional(readOnly = true)
     fun getDepositReport(username: String, from: LocalDate, to: LocalDate): DepositReportResponse {
         if (from.isAfter(to)) {
@@ -44,11 +44,11 @@ class ReportService(
             from = from,
             to = to,
             totalDeposited = deposits.sumOf { it.amount },
-            deposits = deposits.map(::toReportItem)
+            deposits = deposits.map { deposit -> toReportItem(deposit) }
         )
     }
 
-    // Pretvara depozit u stavku izvestaja sa podacima o cilju kojem pripada.
+    // Pretvara depozit u stavku izvestaja sa podacima o cilju kojem pripada
     private fun toReportItem(deposit: Deposit): DepositReportItem {
         return DepositReportItem(
             depositId = deposit.id!!,

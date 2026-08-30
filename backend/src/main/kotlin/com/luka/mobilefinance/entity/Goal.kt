@@ -17,7 +17,7 @@ import java.util.Date
 
 @Entity
 @Table(name = "goals")
-// Predstavlja jedan stedni cilj jednog korisnika.
+// Predstavlja jedan stedni cilj jednog korisnika
 class Goal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,7 @@ class Goal {
     @Column(name = "current_amount")
     lateinit var currentAmount: BigDecimal
 
-    // Rok nije obavezan prilikom kreiranja cilja.
+    // Rok nije obavezan prilikom kreiranja cilja
     @Column(name = "deadline")
     var deadline: LocalDate? = null
 

@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.Date
 
-// Podaci o cilju koje backend vraca mobilnoj aplikaciji.
+// Podaci o cilju koje backend vraca mobilnoj aplikaciji
 data class GoalResponse(
     val id: Long,
     val name: String,

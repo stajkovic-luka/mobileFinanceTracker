@@ -10,7 +10,7 @@ import java.util.Date
 
 @Table(name = "users")
 @Entity
-// Predstavlja korisnika aplikacije i podatke koji se cuvaju u users tabeli.
+// Predstavlja korisnika aplikacije i podatke koji se cuvaju u users tabeli
 class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

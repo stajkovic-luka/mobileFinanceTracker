@@ -1,6 +1,6 @@
 package com.stajkovicluka.financeapp.data.model
 
-// Kotlin modeli za login, registraciju i JWT odgovor backend-a.
+// Kotlin modeli za login, registraciju i JWT odgovor backend-a
 data class LoginRequest(
     val username: String,
     val password: String

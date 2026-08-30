@@ -20,7 +20,7 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.math.BigDecimal
 
-// Drzi stanje detalja cilja i akcije nad njegovim uplatama.
+// Drzi stanje detalja cilja i akcije nad njegovim uplatama
 class GoalDetailsViewModel(application: Application) : AndroidViewModel(application) {
     private val goalsRepository = GoalsRepository(ApiClient.api)
     private val depositsRepository = DepositsRepository(ApiClient.api)

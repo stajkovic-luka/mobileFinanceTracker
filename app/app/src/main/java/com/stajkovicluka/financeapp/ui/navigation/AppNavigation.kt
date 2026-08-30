@@ -37,7 +37,7 @@ import com.stajkovicluka.financeapp.viewmodel.GoalsViewModel
 import com.stajkovicluka.financeapp.viewmodel.GoalDetailsViewModel
 import com.stajkovicluka.financeapp.viewmodel.ReportViewModel
 
-// Definise rute i prelazak korisnika izmedju Compose ekrana.
+// Definise rute i prelazak korisnika izmedju Compose ekrana
 private const val WELCOME_ROUTE = "welcome"
 private const val LOGIN_ROUTE = "login"
 private const val REGISTER_ROUTE = "register"
@@ -309,7 +309,7 @@ fun AppNavigation(
     }
 }
 
-// Prikazuje pocetni ekran pre prelaska na prijavu.
+// Prikazuje pocetni ekran pre prelaska na prijavu
 @Composable
 private fun WelcomeScreen(onContinue: () -> Unit) {
     Surface(modifier = Modifier.fillMaxSize()) {

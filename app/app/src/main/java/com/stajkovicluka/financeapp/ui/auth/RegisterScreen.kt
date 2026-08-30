@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.stajkovicluka.financeapp.R
 import com.stajkovicluka.financeapp.viewmodel.AuthViewModel
 
-// Prikazuje formu za registraciju novog korisnika.
+// Prikazuje formu za registraciju novog korisnika
 @Composable
 fun RegisterScreen(
     authViewModel: AuthViewModel,

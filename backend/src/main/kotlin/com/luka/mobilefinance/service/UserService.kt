@@ -16,18 +16,17 @@ import java.util.Date
 class UserService(private val repo: UserRepo, private val passwordEncoder: PasswordEncoder, private val jwtService: JwtService) {
 
 
-    // Kreira novog usera (lozinka hesovana) i vraca JWT da klijent odmah bude ulogovan
+    // Kreira novog korisnika (lozinka hesovana) i vraca JWT da klijent odmah bude ulogovan
     fun register(user: RegisterRequest): AuthResponse {
         val hashedPW = passwordEncoder.encode(user.passwordPlain)
 
-        val newUser = User().apply {
-            email = user.email
-            username = user.username
-            passwordHash = hashedPW
-            name = user.nameSurname
-            createdAt = Date()
-            updatedAt = Date()
-        }
+        val newUser = User()
+        newUser.email = user.email
+        newUser.username = user.username
+        newUser.passwordHash = hashedPW
+        newUser.name = user.nameSurname
+        newUser.createdAt = Date()
+        newUser.updatedAt = Date()
 
         val savedUser : User = repo.save(newUser)
 

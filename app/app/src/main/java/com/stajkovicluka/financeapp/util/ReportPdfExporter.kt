@@ -16,7 +16,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.math.BigDecimal
 
-// Pravi PDF iz trenutno ucitanog izvestaja i deli ga kroz Android.
+// Pravi PDF iz trenutno ucitanog izvestaja i deli ga kroz Android
 object ReportPdfExporter {
     private const val pageWidth = 595
     private const val pageHeight = 842
@@ -150,7 +150,8 @@ object ReportPdfExporter {
             formatDate(deposit.createdAt) + " - " + deposit.goalName + ": " +
                 formatAmount(deposit.amount) + " RSD"
         )
-        deposit.note?.takeIf { it.isNotBlank() }?.let { note ->
+        val note = deposit.note
+        if (note != null && note.isNotBlank()) {
             lines.add("Napomena: " + shorten(note, 70))
         }
         return lines
@@ -267,7 +268,8 @@ object ReportPdfExporter {
     }
 
     private fun maximumAmount(values: List<ChartValue>): BigDecimal {
-        return values.maxOf { it.amount }.takeIf { it > BigDecimal.ZERO } ?: BigDecimal.ONE
+        val max = values.maxOf { it.amount }
+        return if (max > BigDecimal.ZERO) max else BigDecimal.ONE
     }
 
     private fun chartArea(top: Float): ChartArea {

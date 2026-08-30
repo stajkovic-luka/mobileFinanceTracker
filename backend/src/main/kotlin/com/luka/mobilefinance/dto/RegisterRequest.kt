@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
-// Podaci koje korisnik salje pri registraciji novog naloga.
+// Podaci koje korisnik salje pri registraciji novog naloga
 data class RegisterRequest(
     @field:NotBlank
     @field:Email

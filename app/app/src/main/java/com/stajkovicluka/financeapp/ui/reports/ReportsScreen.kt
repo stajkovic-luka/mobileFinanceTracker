@@ -52,7 +52,7 @@ import com.patrykandpatrick.vico.compose.m3.common.rememberM3VicoTheme
 import java.util.Calendar
 import java.math.BigDecimal
 
-// Omogucava izbor perioda i prikaz izvestaja uplata.
+// Omogucava izbor perioda i prikaz izvestaja uplata
 @Composable
 fun ReportsScreen(
     reportViewModel: ReportViewModel,
@@ -245,7 +245,8 @@ private fun DailyTotalsChart(dailyTotals: List<DailyDepositTotal>) {
     val modelProducer = remember { CartesianChartModelProducer() }
     val dateFormatter = remember(dailyTotals) {
         CartesianValueFormatter { _, value, _ ->
-            dailyTotals.getOrNull(value.toInt())?.date?.let(::formatDate).orEmpty()
+            val dailyTotal = dailyTotals.getOrNull(value.toInt())
+            if (dailyTotal != null) formatDate(dailyTotal.date) else ""
         }
     }
 
@@ -280,7 +281,8 @@ private fun MonthlyTotalsChart(monthlyTotals: List<MonthlyDepositTotal>) {
     val modelProducer = remember { CartesianChartModelProducer() }
     val monthFormatter = remember(monthlyTotals) {
         CartesianValueFormatter { _, value, _ ->
-            monthlyTotals.getOrNull(value.toInt())?.month?.let(::formatMonth).orEmpty()
+            val monthlyTotal = monthlyTotals.getOrNull(value.toInt())
+            if (monthlyTotal != null) formatMonth(monthlyTotal.month) else ""
         }
     }
 
@@ -320,7 +322,8 @@ private fun ReportDepositCard(deposit: DepositReportItem) {
                 modifier = Modifier.padding(top = 4.dp)
             )
             Text(text = formatDate(deposit.createdAt), modifier = Modifier.padding(top = 4.dp))
-            deposit.note?.takeIf { it.isNotBlank() }?.let { note ->
+            val note = deposit.note
+            if (note != null && note.isNotBlank()) {
                 Text(text = note, modifier = Modifier.padding(top = 4.dp))
             }
         }

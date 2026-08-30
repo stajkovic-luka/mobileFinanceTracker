@@ -17,27 +17,26 @@ import java.math.BigDecimal
 import java.util.Date
 
 @Service
-// Sadrzi poslovnu logiku za dodavanje i pregled uplata.
+// Poslovna logika za uplate
 class DepositService(
     private val depositRepo: DepositRepo,
     private val goalRepo: GoalRepo,
     private val userRepo: UserRepo
 ) {
 
-    // Dodaje uplatu na cilj prijavljenog korisnika i azurira stanje cilja.
+    // Dodaje uplatu na cilj prijavljenog korisnika i azurira stanje cilja
     @Transactional
     fun createDeposit(username: String, goalId: Long, request: CreateDepositRequest): DepositResponse {
         val goal = findGoalForUser(username, goalId)
         ensureGoalIsNotArchived(goal)
         val now = Date()
 
-        val deposit = Deposit().apply {
-            this.goal = goal
-            amount = request.amount
-            note = request.note
-            createdAt = now
-            updatedAt = now
-        }
+        val deposit = Deposit()
+        deposit.goal = goal
+        deposit.amount = request.amount
+        deposit.note = request.note
+        deposit.createdAt = now
+        deposit.updatedAt = now
 
         val savedDeposit = depositRepo.save(deposit)
         recalculateGoalAmount(goal)
@@ -45,14 +44,15 @@ class DepositService(
         return toResponse(savedDeposit)
     }
 
-    // Vraca sve uplate cilja samo ako cilj pripada prijavljenom korisniku.
+    // Vraca sve uplate cilja samo ako cilj pripada prijavljenom korisniku
     fun getDeposits(username: String, goalId: Long): List<DepositResponse> {
         val goal = findGoalForUser(username, goalId)
 
-        return depositRepo.findAllByGoalIdOrderByCreatedAtAsc(goal.id!!).map(::toResponse)
+        return depositRepo.findAllByGoalIdOrderByCreatedAtAsc(goal.id!!)
+            .map { deposit -> toResponse(deposit) }
     }
 
-    // Menja iznos i/ili napomenu uplate samo ako cilj pripada prijavljenom korisniku.
+    // Menja iznos i/ili napomenu uplate samo ako cilj pripada prijavljenom korisniku
     @Transactional
     fun updateDeposit(
         username: String,
@@ -83,7 +83,7 @@ class DepositService(
         return toResponse(updatedDeposit)
     }
 
-    // Brise uplatu cilja prijavljenog korisnika i ponovo racuna stanje cilja.
+    // Brise uplatu cilja prijavljenog korisnika i ponovo racuna stanje cilja
     @Transactional
     fun deleteDeposit(username: String, goalId: Long, depositId: Long) {
         val goal = findGoalForUser(username, goalId)
@@ -94,7 +94,7 @@ class DepositService(
         recalculateGoalAmount(goal)
     }
 
-    // Nalazi cilj samo ako pripada korisniku iz JWT tokena.
+    // Nalazi cilj samo ako pripada korisniku iz JWT tokena
     private fun findGoalForUser(username: String, goalId: Long): Goal {
         val user = userRepo.findByUsername(username)
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User no longer exists")
@@ -103,20 +103,20 @@ class DepositService(
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Goal not found")
     }
 
-    // Nalazi uplatu samo unutar vec provereno dostupnog cilja.
+    // Nalazi uplatu samo unutar vec provereno dostupnog cilja
     private fun findDepositForGoal(depositId: Long, goalId: Long): Deposit {
         return depositRepo.findByIdAndGoalId(depositId, goalId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Deposit not found")
     }
 
-    // Arhiviran cilj je samo za pregled, pa se njegove uplate ne mogu menjati.
+    // Arhiviran cilj je samo za pregled, pa se njegove uplate ne mogu menjati
     private fun ensureGoalIsNotArchived(goal: Goal) {
         if (goal.status == Status.ARCHIVED) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "Archived goal cannot be changed")
         }
     }
 
-    // Ponovo racuna zbir svih uplata da currentAmount uvek odgovara deposits tabeli.
+    // Ponovo racuna zbir svih uplata da currentAmount uvek odgovara deposits tabeli
     private fun recalculateGoalAmount(goal: Goal) {
         val deposits = depositRepo.findAllByGoalIdOrderByCreatedAtAsc(goal.id!!)
 
@@ -127,7 +127,7 @@ class DepositService(
         goalRepo.save(goal)
     }
 
-    // Pretvara entitet u odgovor koji saljemo mobilnoj aplikaciji.
+    // Pretvara entitet u odgovor koji saljemo mobilnoj aplikaciji
     private fun toResponse(deposit: Deposit): DepositResponse {
         return DepositResponse(
             id = deposit.id!!,

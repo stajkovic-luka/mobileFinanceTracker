@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service
 import java.util.Date
 import javax.crypto.SecretKey
 
-// Kreira i validira JWT tokene koji se koriste za autentifikaciju API zahteva.
+// Kreira i validira JWT tokene koji se koriste za autentifikaciju API zahteva
 @Service
 class JwtService(
     @Value("\${app.jwt.secret}") private val secret: String,
@@ -16,7 +16,7 @@ class JwtService(
 
     private val key: SecretKey = Keys.hmacShaKeyFor(secret.toByteArray())
 
-    // Potpisani JWT koji nosi username - expiry prati definisanu vrednost
+    // Potpisani JWT sa username-om i vremenom isticanja iz konfiguracije
     fun generateToken(username: String): String {
         val now = Date()
         return Jwts.builder()
@@ -28,9 +28,11 @@ class JwtService(
     }
 
     // Parsira token i vraca username iz njega
-    fun extractUsername(token: String): String? = try {
-        Jwts.parser().verifyWith(key).build().parseSignedClaims(token).payload.subject
-    } catch (e: Exception) {
-        null
+    fun extractUsername(token: String): String? {
+        return try {
+            Jwts.parser().verifyWith(key).build().parseSignedClaims(token).payload.subject
+        } catch (e: Exception) {
+            null
+        }
     }
 }

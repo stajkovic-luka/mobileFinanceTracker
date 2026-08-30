@@ -16,7 +16,7 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.math.BigDecimal
 
-// Drzi listu ciljeva i akcije nad ciljevima na ekranu liste.
+// Drzi listu ciljeva i akcije nad ciljevima na ekranu liste
 class GoalsViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = GoalsRepository(ApiClient.api)
     private val tokenManager = TokenManager(application.applicationContext)

@@ -86,7 +86,7 @@ Run backend tests with:
 2. Connect a physical Android device through Android Studio.
 3. Start the backend before running the Android app.
 4. Ensure the device and the computer running the backend are on the same local network.
-5. Set `BASE_URL` in `app/app/src/main/java/com/stajkovicluka/financeapp/data/api/ApiClient.kt` to the computer's local IP address and backend port, for example `http://192.168.1.10:8080/`.
+5. Set `baseUrl` in `app/local.properties` to the computer's local IP address and backend port, for example `baseUrl=http://192.168.1.10:8080/`. The `dev.sh` script at the repository root updates this value automatically before every build.
 6. Run the `app` configuration.
 
 The Android client covers the full flow: registration and login with local JWT storage, goals and deposits with full CRUD, goal archiving, and reports with charts and PDF export.

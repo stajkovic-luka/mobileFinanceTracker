@@ -40,7 +40,7 @@ import com.stajkovicluka.financeapp.data.model.Goal
 import com.stajkovicluka.financeapp.util.formatAmount
 import com.stajkovicluka.financeapp.viewmodel.GoalDetailsViewModel
 
-// Prikazuje detalje jednog cilja i listu njegovih uplata.
+// Prikazuje detalje jednog cilja i listu njegovih uplata
 @Composable
 fun GoalDetailsScreen(
     goalId: Long,
@@ -328,7 +328,8 @@ private fun DepositCard(
                 text = stringResource(R.string.deposit_date, formatDate(deposit.createdAt)),
                 style = MaterialTheme.typography.bodyMedium
             )
-            deposit.note?.takeIf { it.isNotBlank() }?.let { note ->
+            val note = deposit.note
+            if (note != null && note.isNotBlank()) {
                 Text(
                     text = stringResource(R.string.deposit_note, note),
                     style = MaterialTheme.typography.bodyMedium

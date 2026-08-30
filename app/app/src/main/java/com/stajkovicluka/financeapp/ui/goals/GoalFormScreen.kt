@@ -32,7 +32,7 @@ import com.stajkovicluka.financeapp.data.model.Goal
 import com.stajkovicluka.financeapp.R
 import java.util.Calendar
 
-// Prikazuje formu za dodavanje ili izmenu cilja stednje.
+// Prikazuje formu za dodavanje ili izmenu cilja stednje
 @Composable
 fun GoalFormScreen(
     onBack: () -> Unit,
@@ -54,7 +54,7 @@ fun GoalFormScreen(
             name = goal.name
             targetAmount = goal.targetAmount.toPlainString()
             deadlineForRequest = goal.deadline
-            deadlineForDisplay = goal.deadline?.let(::formatDate).orEmpty()
+            deadlineForDisplay = if (goal.deadline != null) formatDate(goal.deadline) else ""
         }
     }
 

@@ -8,7 +8,7 @@ import com.stajkovicluka.financeapp.ui.navigation.AppNavigation
 import com.stajkovicluka.financeapp.ui.theme.ThemeMode
 import com.stajkovicluka.financeapp.viewmodel.AuthViewModel
 
-// Predstavlja glavni Compose sadrzaj aplikacije nakon pokretanja.
+// Predstavlja glavni Compose sadrzaj aplikacije nakon pokretanja
 @Composable
 fun FinanceApp(
     themeMode: ThemeMode,

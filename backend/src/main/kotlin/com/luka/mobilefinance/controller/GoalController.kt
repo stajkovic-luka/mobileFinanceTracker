@@ -19,30 +19,30 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/goals")
-// Prima HTTP zahteve vezane za stedne ciljeve prijavljenog korisnika.
+// Prima HTTP zahteve vezane za stedne ciljeve prijavljenog korisnika
 class GoalController(private val goalService: GoalService) {
 
-    // Kreira novi stedni cilj za korisnika ciji je username procitan iz JWT tokena.
+    // Kreira novi stedni cilj za korisnika ciji je username procitan iz JWT tokena
     @PostMapping
     fun createGoal(
         @RequestAttribute("username") username: String,
         @Valid @RequestBody request: CreateGoalRequest
     ): GoalResponse = goalService.createGoal(username, request)
 
-    // Vraca samo ciljeve trenutno prijavljenog korisnika.
+    // Vraca samo ciljeve trenutno prijavljenog korisnika
     @GetMapping
     fun getGoals(@RequestAttribute("username") username: String): List<GoalResponse> {
         return goalService.getGoals(username)
     }
 
-    // Vraca jedan cilj samo ako pripada trenutno prijavljenom korisniku.
+    // Vraca jedan cilj samo ako pripada trenutno prijavljenom korisniku
     @GetMapping("/{goalId}")
     fun getGoal(
         @RequestAttribute("username") username: String,
         @PathVariable goalId: Long
     ): GoalResponse = goalService.getGoal(username, goalId)
 
-    // Menja jednu ili vise prosledjenih vrednosti postojeceg cilja.
+    // Menja jednu ili vise prosledjenih vrednosti postojeceg cilja
     @PatchMapping("/{goalId}")
     fun updateGoal(
         @RequestAttribute("username") username: String,
@@ -50,21 +50,21 @@ class GoalController(private val goalService: GoalService) {
         @Valid @RequestBody request: UpdateGoalRequest
     ): GoalResponse = goalService.updateGoal(username, goalId, request)
 
-    // Arhivira cilj prijavljenog korisnika bez brisanja njegovih podataka.
+    // Arhivira cilj prijavljenog korisnika bez brisanja njegovih podataka
     @PatchMapping("/{goalId}/archive")
     fun archiveGoal(
         @RequestAttribute("username") username: String,
         @PathVariable goalId: Long
     ): GoalResponse = goalService.archiveGoal(username, goalId)
 
-    // Vraca arhivirani cilj medju aktivne ciljeve korisnika.
+    // Vraca arhivirani cilj medju aktivne ciljeve korisnika
     @PatchMapping("/{goalId}/unarchive")
     fun unarchiveGoal(
         @RequestAttribute("username") username: String,
         @PathVariable goalId: Long
     ): GoalResponse = goalService.unarchiveGoal(username, goalId)
 
-    // Brise cilj prijavljenog korisnika i njegove uplate preko database cascade pravila.
+    // Brise cilj prijavljenog korisnika i njegove uplate kaskadom u bazi
     @DeleteMapping("/{goalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteGoal(

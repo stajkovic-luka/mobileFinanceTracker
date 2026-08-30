@@ -9,7 +9,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
-// Presretne svaki request - javni endpoint prolazi, a za sve ostale zahteva validan JWT.
+// Presrece svaki zahtev - javni endpointi prolaze, za ostale je potreban validan JWT
 @Component
 class JwtAuthFilter(private val jwtService: JwtService) : OncePerRequestFilter() {
 
@@ -39,12 +39,12 @@ class JwtAuthFilter(private val jwtService: JwtService) : OncePerRequestFilter()
             return
         }
 
-        // Expose autentifikovani username controllerima kroz request attribute
+        // Username iz tokena kontroleri citaju kao request attribute
         request.setAttribute("username", username)
         filterChain.doFilter(request, response)
     }
 
-    // Smanjuje ponavljanje - helper
+    // Vraca 401 odgovor sa greskom u JSON formatu
     private fun sendUnauthorized(response: HttpServletResponse, message: String) {
         response.status = HttpStatus.UNAUTHORIZED.value()
         response.contentType = MediaType.APPLICATION_JSON_VALUE

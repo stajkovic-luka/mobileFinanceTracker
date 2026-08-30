@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-// Drzi stanje prijave i registracije i povezuje auth ekrane sa Repository klasom.
+// Drzi stanje prijave i registracije i povezuje auth ekrane sa Repository klasom
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = AuthRepository(ApiClient.api)
     private val tokenManager = TokenManager(application.applicationContext)

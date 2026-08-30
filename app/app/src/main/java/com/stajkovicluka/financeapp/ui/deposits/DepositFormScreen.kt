@@ -30,7 +30,7 @@ import com.stajkovicluka.financeapp.R
 import com.stajkovicluka.financeapp.viewmodel.GoalDetailsViewModel
 import com.stajkovicluka.financeapp.data.model.Deposit
 
-// Prikazuje formu za dodavanje ili izmenu uplate za jedan cilj.
+// Prikazuje formu za dodavanje ili izmenu uplate za jedan cilj
 @Composable
 fun DepositFormScreen(
     goalId: Long,

@@ -18,7 +18,7 @@ import retrofit2.http.PATCH
 import retrofit2.http.DELETE
 import retrofit2.http.Query
 
-// Retrofit pozivi ka endpointima na backendu
+// Retrofit pozivi ka endpointima backend-a
 interface FinanceApi {
     @POST("login")
     suspend fun login(@Body request: LoginRequest): AuthResponse

@@ -7,7 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 
 @SpringBootApplication
-// Glavna klasa koja pokrece Spring Boot backend aplikaciju.
+// Glavna klasa koja pokrece Spring Boot backend aplikaciju
 class FinanceAppApplication
 
 fun main(args: Array<String>) {

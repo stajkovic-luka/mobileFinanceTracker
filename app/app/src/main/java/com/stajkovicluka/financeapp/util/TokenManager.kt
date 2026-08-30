@@ -2,7 +2,7 @@ package com.stajkovicluka.financeapp.util
 
 import android.content.Context
 
-// Cuva i cita JWT token kako bi aplikacija znala da li je korisnik prijavljen.
+// Cuva i cita JWT token kako bi aplikacija znala da li je korisnik prijavljen
 class TokenManager(context: Context) {
     private val preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
 

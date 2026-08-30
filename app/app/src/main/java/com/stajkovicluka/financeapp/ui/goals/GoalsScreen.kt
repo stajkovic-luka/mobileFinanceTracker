@@ -33,7 +33,7 @@ import com.stajkovicluka.financeapp.ui.theme.Green
 import com.stajkovicluka.financeapp.util.formatAmount
 import com.stajkovicluka.financeapp.viewmodel.GoalsViewModel
 
-// Prikazuje listu ciljeva prijavljenog korisnika.
+// Prikazuje listu ciljeva prijavljenog korisnika
 @Composable
 fun GoalsScreen(
     goalsViewModel: GoalsViewModel,
@@ -171,7 +171,7 @@ private fun formatDate(date: String): String {
     return if (parts.size == 3) "${parts[2]}.${parts[1]}.${parts[0]}" else date
 }
 
-// Prikazuje status cilja sa bojom koja odgovara njegovom stanju.
+// Prikazuje status cilja sa bojom koja odgovara njegovom stanju
 @Composable
 fun GoalStatus(status: String, modifier: Modifier = Modifier) {
     val statusColor = when (status) {

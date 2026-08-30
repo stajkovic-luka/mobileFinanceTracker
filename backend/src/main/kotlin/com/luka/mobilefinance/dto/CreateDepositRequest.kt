@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.Size
 import java.math.BigDecimal
 
-// Podaci koje klijent salje kada dodaje uplatu na stedni cilj.
+// Podaci koje klijent salje kada dodaje uplatu na stedni cilj
 data class CreateDepositRequest(
     @field:DecimalMin(value = "0.01")
     @field:Digits(integer = 10, fraction = 2)

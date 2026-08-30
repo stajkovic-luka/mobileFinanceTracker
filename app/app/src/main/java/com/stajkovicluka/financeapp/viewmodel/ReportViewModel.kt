@@ -18,7 +18,7 @@ import java.io.IOException
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-// Drzi izabrani izvestaj i stanje njegovog ucitavanja.
+// Drzi izabrani izvestaj i stanje njegovog ucitavanja
 class ReportViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = ReportRepository(ApiClient.api)
     private val tokenManager = TokenManager(application.applicationContext)
@@ -96,26 +96,36 @@ class ReportViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     private fun calculateDailyTotals(report: DepositReportResponse): List<DailyDepositTotal> {
-        return report.deposits
-            .groupBy { it.createdAt.substringBefore("T") }
-            .toSortedMap()
-            .map { (date, deposits) ->
-                DailyDepositTotal(date, deposits.sumOf { it.amount })
-            }
+        val depositsByDate = report.deposits.groupBy { it.createdAt.substringBefore("T") }
+        val totals = mutableListOf<DailyDepositTotal>()
+
+        for (date in depositsByDate.keys.sorted()) {
+            val dayTotal = depositsByDate.getValue(date).sumOf { it.amount }
+            totals.add(DailyDepositTotal(date, dayTotal))
+        }
+
+        return totals
     }
 
     private fun calculateMonthlyTotals(
         report: DepositReportResponse,
         year: String
     ): List<MonthlyDepositTotal> {
-        val totalsByMonth = report.deposits
-            .groupBy { it.createdAt.substringBefore("T").take(7) }
-            .mapValues { (_, deposits) -> deposits.sumOf { it.amount } }
+        val depositsByMonth = report.deposits.groupBy { it.createdAt.substringBefore("T").take(7) }
+        val totals = mutableListOf<MonthlyDepositTotal>()
 
-        return (1..12).map { month ->
+        for (month in 1..12) {
             val monthValue = "%02d".format(month)
             val monthKey = "$year-$monthValue"
-            MonthlyDepositTotal(monthKey, totalsByMonth[monthKey] ?: BigDecimal.ZERO)
+            val deposits = depositsByMonth[monthKey]
+            val monthTotal = if (deposits != null) {
+                deposits.sumOf { it.amount }
+            } else {
+                BigDecimal.ZERO
+            }
+            totals.add(MonthlyDepositTotal(monthKey, monthTotal))
         }
+
+        return totals
     }
 }

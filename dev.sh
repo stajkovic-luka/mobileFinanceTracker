@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# Author: Luka Stajkovic
+# Date Modified: 30.08.2026.
+# Description: Skripta za automatizaciju testiranja i pokretanja razlicitih delova projekta
 
 # Lokalne komande za pokretanje i proveru projekta.
 
@@ -15,19 +18,23 @@ else
     ADB="$HOME/Library/Android/sdk/platform-tools/adb"
 fi
 
+show_signature(){
+    echo -e "\e[32m"
+    echo " ██████╗ ███████╗██╗   ██╗         ███████╗██╗  ██╗"
+    echo " ██╔══██╗██╔════╝██║   ██║         ██╔════╝██║  ██║"
+    echo " ██║  ██║█████╗  ██║   ██║   ██╗   ███████╗███████║"
+    echo " ██║  ██║██╔══╝  ╚██╗ ██╔╝   ╚═╝   ╚════██║██╔══██║"
+    echo " ██████╔╝███████╗ ╚████╔╝          ███████║██║  ██║"
+    echo " ╚═════╝ ╚══════╝  ╚═══╝           ╚══════╝╚═╝  ╚═╝"
+    echo "-----------------------------"
+    echo -e "\e[0m"
+
+}
+
 show_help() {
     echo -e "\e[1;36m"
 
-    cat << "EOF"
-        __  __     __                     __            __       __
-       / / / /__  / /___  ___  _____     / /_  __  __  / /   __  / /______ _
-      / /_/ / _ \/ / __ \/ _ \/ ___/    / __ \/ / / / / /   / / / / //_/ __ `/
-     / __  /  __/ / /_/ /  __/ /       / /_/ / /_/ / / /___/ /_/ / ,< / /_/ /
-    /_/ /_/\___/_/ .___/\___/_/       /_.___/\__, / /_____/\__,_/_/|_|\__,_/
-                /_/                         /____/
-EOF
-
-    echo "-----------------------------"
+    show_signature
 
     tput sgr0
     echo ""
@@ -113,6 +120,27 @@ require_device() {
     fi
 }
 
+update_base_url() {
+    local ip
+    ip=$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null)
+
+    if [ -z "$ip" ]; then
+        echo "Lokalna IP adresa nije pronadjena, koristi se postojeca baseUrl vrednost"
+        return 0
+    fi
+
+    local properties="$ANDROID_DIR/local.properties"
+    if grep -q "^baseUrl=" "$properties" 2>/dev/null; then
+        sed -i '' "s|^baseUrl=.*|baseUrl=http://$ip:8080/|" "$properties"
+    else
+        # fajl moze da se zavrsi bez novog reda, pa se prvo on dodaje da se ne nalepi na sdk.dir
+        [ -n "$(tail -c 1 "$properties")" ] && echo >> "$properties"
+        echo "baseUrl=http://$ip:8080/" >> "$properties"
+    fi
+
+    echo "baseUrl azuriran na http://$ip:8080/"
+}
+
 case "$1" in
     backend)
         case "$2" in
@@ -126,6 +154,7 @@ case "$1" in
         ./gradlew test
         ;;
     android-build)
+        update_base_url
         cd "$ANDROID_DIR" || exit 1
         ./gradlew assembleDebug
         ;;
@@ -135,11 +164,13 @@ case "$1" in
         ;;
     android-install)
         require_device
+        update_base_url
         cd "$ANDROID_DIR" || exit 1
         ./gradlew installDebug
         ;;
     android-run)
         require_device
+        update_base_url
         cd "$ANDROID_DIR" || exit 1
         ./gradlew installDebug && "$ADB" shell am start -n "$PACKAGE_NAME/.MainActivity"
         ;;

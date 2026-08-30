@@ -14,7 +14,7 @@ import java.util.Date
 
 @Entity
 @Table(name = "deposits")
-// Predstavlja jednu uplatu vezanu za jedan stedni cilj.
+// Predstavlja jednu uplatu vezanu za jedan stedni cilj
 class Deposit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

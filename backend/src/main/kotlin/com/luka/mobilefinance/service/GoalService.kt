@@ -15,41 +15,41 @@ import java.math.RoundingMode
 import java.util.Date
 
 @Service
-// Sadrzi poslovnu logiku za kreiranje i pregled stednih ciljeva.
+// Poslovna logika za stedne ciljeve
 class GoalService(
     private val goalRepo: GoalRepo,
     private val userRepo: UserRepo
 ) {
 
-    // Kreira cilj i automatski ga povezuje sa prijavljenim korisnikom.
+    // Kreira cilj i automatski ga povezuje sa prijavljenim korisnikom
     fun createGoal(username: String, request: CreateGoalRequest): GoalResponse {
         val user = userRepo.findByUsername(username)
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User no longer exists")
 
         val now = Date()
-        val goal = Goal().apply {
-            this.user = user
-            name = request.name
-            targetAmount = request.targetAmount
-            currentAmount = BigDecimal.ZERO
-            deadline = request.deadline
-            status = Status.ACTIVE
-            createdAt = now
-            updatedAt = now
-        }
+        val goal = Goal()
+        goal.user = user
+        goal.name = request.name
+        goal.targetAmount = request.targetAmount
+        goal.currentAmount = BigDecimal.ZERO
+        goal.deadline = request.deadline
+        goal.status = Status.ACTIVE
+        goal.createdAt = now
+        goal.updatedAt = now
 
         return toResponse(goalRepo.save(goal))
     }
 
-    // Nalazi sve ciljeve prijavljenog korisnika, bez ciljeva drugih korisnika.
+    // Nalazi sve ciljeve prijavljenog korisnika, bez ciljeva drugih korisnika
     fun getGoals(username: String): List<GoalResponse> {
         val user = userRepo.findByUsername(username)
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User no longer exists")
 
-        return goalRepo.findAllByUserIdOrderByCreatedAtDesc(user.id!!).map(::toResponse)
+        return goalRepo.findAllByUserIdOrderByCreatedAtDesc(user.id!!)
+            .map { goal -> toResponse(goal) }
     }
 
-    // Vraca jedan cilj samo ako pripada prijavljenom korisniku.
+    // Vraca jedan cilj samo ako pripada prijavljenom korisniku
     fun getGoal(username: String, goalId: Long): GoalResponse {
         val user = userRepo.findByUsername(username)
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User no longer exists")
@@ -60,7 +60,7 @@ class GoalService(
         return toResponse(goal)
     }
 
-    // Menja podatke cilja samo ako cilj pripada prijavljenom korisniku.
+    // Menja podatke cilja samo ako cilj pripada prijavljenom korisniku
     fun updateGoal(username: String, goalId: Long, request: UpdateGoalRequest): GoalResponse {
         val user = userRepo.findByUsername(username)
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User no longer exists")
@@ -81,7 +81,7 @@ class GoalService(
         if (request.targetAmount != null) {
             goal.targetAmount = request.targetAmount
 
-            // Cilj je zavrsen ako je trenutni iznos jednak ili veci od novog ciljanog iznosa.
+            // Cilj je zavrsen ako je trenutni iznos jednak ili veci od novog ciljanog iznosa
             goal.status = if (goal.currentAmount >= goal.targetAmount) Status.COMPLETED else Status.ACTIVE
         }
 
@@ -93,7 +93,7 @@ class GoalService(
         return toResponse(goalRepo.save(goal))
     }
 
-    // Menja status cilja u ARCHIVED, ali zadrzava cilj i njegove uplate za pregled.
+    // Menja status cilja u ARCHIVED, ali zadrzava cilj i njegove uplate za pregled
     fun archiveGoal(username: String, goalId: Long): GoalResponse {
         val user = userRepo.findByUsername(username)
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User no longer exists")
@@ -107,7 +107,7 @@ class GoalService(
         return toResponse(goalRepo.save(goal))
     }
 
-    // Vraca cilj iz arhive i odredjuje njegov status prema trenutnom iznosu.
+    // Vraca cilj iz arhive i odredjuje njegov status prema trenutnom iznosu
     fun unarchiveGoal(username: String, goalId: Long): GoalResponse {
         val user = userRepo.findByUsername(username)
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User no longer exists")
@@ -129,7 +129,7 @@ class GoalService(
         return toResponse(goalRepo.save(goal))
     }
 
-    // Brise cilj samo ako pripada prijavljenom korisniku.
+    // Brise cilj samo ako pripada prijavljenom korisniku
     fun deleteGoal(username: String, goalId: Long) {
         val user = userRepo.findByUsername(username)
             ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User no longer exists")
@@ -140,20 +140,19 @@ class GoalService(
         goalRepo.delete(goal)
     }
 
-    // Arhiviran cilj je samo za pregled, pa se vise ne moze menjati.
+    // Arhiviran cilj je samo za pregled, pa se vise ne moze menjati
     private fun ensureGoalIsNotArchived(goal: Goal) {
         if (goal.status == Status.ARCHIVED) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "Archived goal cannot be changed")
         }
     }
 
-    // Pretvara entitet iz baze u odgovor koji saljemo mobilnoj aplikaciji.
+    // Pretvara entitet iz baze u odgovor koji saljemo mobilnoj aplikaciji
     private fun toResponse(goal: Goal): GoalResponse {
-        // Procenat je ogranicen na 100 i racuna se iz trenutnog i ciljanog iznosa.
-        val progress = goal.currentAmount
-            .multiply(BigDecimal(100))
-            .divide(goal.targetAmount, 2, RoundingMode.HALF_UP)
-            .min(BigDecimal(100))
+        // Procenat je ogranicen na 100 i racuna se iz trenutnog i ciljanog iznosa
+        val amountTimesHundred = goal.currentAmount.multiply(BigDecimal(100))
+        val percentage = amountTimesHundred.divide(goal.targetAmount, 2, RoundingMode.HALF_UP)
+        val progress = percentage.min(BigDecimal(100))
 
         return GoalResponse(
             id = goal.id!!,

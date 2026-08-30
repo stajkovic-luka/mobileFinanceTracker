@@ -65,7 +65,7 @@ import com.stajkovicluka.financeapp.ui.theme.ThemeMode
 import com.stajkovicluka.financeapp.util.TokenManager
 import kotlinx.coroutines.launch
 
-// Zajednicki raspored za glavne ekrane prijavljenog korisnika.
+// Zajednicki raspored za glavne ekrane prijavljenog korisnika
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppShell(
@@ -334,7 +334,7 @@ fun AppShell(
     }
 }
 
-// Prikazuje jednu informaciju o prijavljenom korisniku u profilu.
+// Prikazuje jednu informaciju o prijavljenom korisniku u profilu
 @Composable
 private fun ProfileDataRow(label: String, value: String?) {
     Text(
@@ -342,19 +342,20 @@ private fun ProfileDataRow(label: String, value: String?) {
         style = MaterialTheme.typography.labelMedium,
         modifier = Modifier.padding(top = 8.dp)
     )
+    val displayValue = if (value != null && value.isNotBlank()) value else "-"
     Text(
-        text = value?.takeIf { it.isNotBlank() } ?: "-",
+        text = displayValue,
         style = MaterialTheme.typography.bodyLarge
     )
 }
 
-// Pretvara datum iz backend odgovora u evropski format.
+// Pretvara ISO datum iz odgovora backend-a u evropski format
 private fun formatProfileDate(createdAt: String?): String {
     val parts = createdAt.orEmpty().substringBefore("T").split("-")
     return if (parts.size == 3) "${parts[2]}.${parts[1]}.${parts[0]}" else "-"
 }
 
-// Oznacava aktivnu stavku donje navigacije.
+// Oznacava aktivnu stavku donje navigacije
 enum class AppDestination {
     HOME,
     GOALS,

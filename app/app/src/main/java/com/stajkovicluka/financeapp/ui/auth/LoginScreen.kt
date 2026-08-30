@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.stajkovicluka.financeapp.R
 import com.stajkovicluka.financeapp.viewmodel.AuthViewModel
 
-// Prikazuje formu za prijavu korisnika u aplikaciju.
+// Prikazuje formu za prijavu korisnika u aplikaciju
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
