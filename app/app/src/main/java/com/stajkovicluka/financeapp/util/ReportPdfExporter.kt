@@ -49,7 +49,7 @@ object ReportPdfExporter {
     private fun createReportFile(context: Context, report: DepositReportResponse): File {
         val reportsDirectory = File(context.cacheDir, "reports")
         if (!reportsDirectory.exists() && !reportsDirectory.mkdirs()) {
-            throw IllegalStateException("Nije moguce napraviti direktorijum za izvestaje.")
+            throw IllegalStateException("Nije moguće napraviti direktorijum za izveštaje.")
         }
 
         return File(reportsDirectory, "izvestaj_" + report.from + "_" + report.to + ".pdf")
@@ -67,7 +67,7 @@ object ReportPdfExporter {
         val titlePaint = textPaint(20f, true)
         val bodyPaint = textPaint(12f)
 
-        canvas.drawText("Izvestaj uplata", margin, 50f, titlePaint)
+        canvas.drawText("Izveštaj uplata", margin, 50f, titlePaint)
         canvas.drawText(
             "Period: " + formatDate(report.from) + " - " + formatDate(report.to),
             margin,
@@ -75,13 +75,13 @@ object ReportPdfExporter {
             bodyPaint
         )
         canvas.drawText(
-            "Ukupno ustedjeno: " + report.totalDeposited.toPlainString(),
+            "Ukupno ušteđeno: " + formatAmount(report.totalDeposited) + " RSD",
             margin,
             96f,
             bodyPaint
         )
         canvas.drawText(
-            "Prosek po cilju: " + averagePerGoal.toPlainString(),
+            "Prosek po cilju: " + formatAmount(averagePerGoal) + " RSD",
             margin,
             116f,
             bodyPaint
@@ -148,7 +148,7 @@ object ReportPdfExporter {
     private fun depositLines(deposit: DepositReportItem): List<String> {
         val lines = mutableListOf(
             formatDate(deposit.createdAt) + " - " + deposit.goalName + ": " +
-                deposit.amount.toPlainString()
+                formatAmount(deposit.amount) + " RSD"
         )
         deposit.note?.takeIf { it.isNotBlank() }?.let { note ->
             lines.add("Napomena: " + shorten(note, 70))
@@ -263,7 +263,7 @@ object ReportPdfExporter {
     }
 
     private fun drawMaximumLabel(canvas: Canvas, maxAmount: BigDecimal, chart: ChartArea) {
-        canvas.drawText(maxAmount.toPlainString(), margin, chart.top + 4f, textPaint(8f))
+        canvas.drawText(formatAmount(maxAmount), margin, chart.top + 4f, textPaint(8f))
     }
 
     private fun maximumAmount(values: List<ChartValue>): BigDecimal {

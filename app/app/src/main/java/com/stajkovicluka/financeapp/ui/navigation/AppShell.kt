@@ -1,11 +1,15 @@
 package com.stajkovicluka.financeapp.ui.navigation
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -49,6 +53,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.painterResource
@@ -82,9 +87,17 @@ fun AppShell(
     var profileDialogVisible by remember { mutableStateOf(false) }
 
     val navigationItemColors = NavigationBarItemDefaults.colors(
+        selectedIconColor = MaterialTheme.colorScheme.onSecondary,
+        selectedTextColor = MaterialTheme.colorScheme.onSecondary,
+        indicatorColor = MaterialTheme.colorScheme.primary,
+        unselectedIconColor = MaterialTheme.colorScheme.onSecondary,
+        unselectedTextColor = MaterialTheme.colorScheme.onSecondary
+    )
+    val drawerItemColors = NavigationDrawerItemDefaults.colors(
+        selectedContainerColor = MaterialTheme.colorScheme.primary,
         selectedIconColor = MaterialTheme.colorScheme.onPrimary,
         selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-        indicatorColor = MaterialTheme.colorScheme.primary,
+        unselectedContainerColor = Color.Transparent,
         unselectedIconColor = MaterialTheme.colorScheme.onSecondary,
         unselectedTextColor = MaterialTheme.colorScheme.onSecondary
     )
@@ -92,6 +105,9 @@ fun AppShell(
     if (profileDialogVisible) {
         AlertDialog(
             onDismissRequest = { profileDialogVisible = false },
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSurface,
             title = { Text(stringResource(R.string.profile_title)) },
             text = {
                 Column {
@@ -124,10 +140,15 @@ fun AppShell(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet(modifier = Modifier.width(280.dp)) {
+            ModalDrawerSheet(
+                modifier = Modifier.width(280.dp),
+                drawerContainerColor = MaterialTheme.colorScheme.secondary,
+                drawerContentColor = MaterialTheme.colorScheme.onSecondary
+            ) {
                 Text(
                     text = stringResource(R.string.menu_title),
                     style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSecondary,
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 20.dp)
                 )
                 NavigationDrawerItem(
@@ -144,11 +165,12 @@ fun AppShell(
                         profileDialogVisible = true
                     },
                     modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                    colors = NavigationDrawerItemDefaults.colors()
+                    colors = drawerItemColors
                 )
                 Text(
                     text = stringResource(R.string.theme_title),
                     style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSecondary,
                     modifier = Modifier.padding(start = 24.dp, top = 16.dp, bottom = 4.dp)
                 )
                 NavigationDrawerItem(
@@ -161,7 +183,8 @@ fun AppShell(
                     selected = themeMode == ThemeMode.SYSTEM,
                     icon = { Icon(Icons.Default.SettingsBrightness, contentDescription = null) },
                     onClick = { onThemeModeChanged(ThemeMode.SYSTEM) },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                    colors = drawerItemColors
                 )
                 NavigationDrawerItem(
                     label = {
@@ -173,7 +196,8 @@ fun AppShell(
                     selected = themeMode == ThemeMode.LIGHT,
                     icon = { Icon(Icons.Default.LightMode, contentDescription = null) },
                     onClick = { onThemeModeChanged(ThemeMode.LIGHT) },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                    colors = drawerItemColors
                 )
                 NavigationDrawerItem(
                     label = {
@@ -185,7 +209,8 @@ fun AppShell(
                     selected = themeMode == ThemeMode.DARK,
                     icon = { Icon(Icons.Default.DarkMode, contentDescription = null) },
                     onClick = { onThemeModeChanged(ThemeMode.DARK) },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                    colors = drawerItemColors
                 )
                 NavigationDrawerItem(
                     label = {
@@ -197,7 +222,8 @@ fun AppShell(
                     selected = false,
                     icon = { Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null) },
                     onClick = onLogout,
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                    colors = drawerItemColors
                 )
             }
         }
@@ -250,32 +276,55 @@ fun AppShell(
                             label = { Text(stringResource(R.string.goals_navigation_label)) },
                             colors = navigationItemColors
                         )
-                        NavigationBarItem(
-                            selected = false,
-                            onClick = { plusMenuVisible = true },
-                            icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                            label = { Text(stringResource(R.string.add_navigation_label)) },
-                            colors = navigationItemColors
-                        )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(80.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clickable { plusMenuVisible = true },
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSecondary
+                            )
+                            Text(
+                                text = stringResource(R.string.add_navigation_label),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSecondary
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = plusMenuVisible,
+                            onDismissRequest = { plusMenuVisible = false },
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = stringResource(R.string.create_goal_menu_item),
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                },
+                                onClick = {
+                                    plusMenuVisible = false
+                                    onCreateGoal()
+                                }
+                            )
+                        }
+                    }
                         NavigationBarItem(
                             selected = selectedDestination == AppDestination.REPORTS,
                             onClick = onReportsClick,
                             icon = { Icon(Icons.Default.BarChart, contentDescription = null) },
                             label = { Text(stringResource(R.string.reports_navigation_label)) },
                             colors = navigationItemColors
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = plusMenuVisible,
-                        onDismissRequest = { plusMenuVisible = false },
-                        modifier = Modifier.align(Alignment.BottomCenter)
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.create_goal_menu_item)) },
-                            onClick = {
-                                plusMenuVisible = false
-                                onCreateGoal()
-                            }
                         )
                     }
                 }

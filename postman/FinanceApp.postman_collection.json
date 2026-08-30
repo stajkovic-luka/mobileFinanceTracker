@@ -231,7 +231,7 @@
           "response": []
         },
         {
-          "name": "Update request",
+          "name": "Update goal",
           "request": {
             "method": "PATCH",
             "header": [
@@ -286,12 +286,58 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Archive Goal",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/goals/{{goalId}}/archive",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "goals",
+                "{{goalId}}",
+                "archive"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unarchive Goal",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/goals/{{goalId}}/unarchive",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "goals",
+                "{{goalId}}",
+                "unarchive"
+              ]
+            }
+          },
+          "response": []
         }
       ]
-    },
-    {
-      "name": "Categories",
-      "item": []
     },
     {
       "name": "Deposits",

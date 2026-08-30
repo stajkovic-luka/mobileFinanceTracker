@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 // Retrofit klijent
 object ApiClient {
-    private const val BASE_URL = "http://192.168.0.2:8080/"
+    private const val BASE_URL = "http://192.168.0.3:8080/"
 
     val api: FinanceApi by lazy {
         Retrofit.Builder()

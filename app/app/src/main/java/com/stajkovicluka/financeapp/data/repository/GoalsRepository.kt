@@ -23,6 +23,14 @@ class GoalsRepository(private val api: FinanceApi) {
         return api.updateGoal("Bearer $token", goalId, request)
     }
 
+    suspend fun archiveGoal(token: String, goalId: Long): Goal {
+        return api.archiveGoal("Bearer $token", goalId)
+    }
+
+    suspend fun unarchiveGoal(token: String, goalId: Long): Goal {
+        return api.unarchiveGoal("Bearer $token", goalId)
+    }
+
     suspend fun deleteGoal(token: String, goalId: Long) {
         api.deleteGoal("Bearer $token", goalId)
     }

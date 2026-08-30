@@ -201,6 +201,16 @@ fun AppNavigation(
                         popUpTo(GOALS_ROUTE) { inclusive = true }
                     }
                 },
+                onGoalArchived = {
+                    navController.navigate(GOALS_ROUTE) {
+                        popUpTo(GOALS_ROUTE) { inclusive = true }
+                    }
+                },
+                onGoalUnarchived = {
+                    navController.navigate(GOALS_ROUTE) {
+                        popUpTo(GOALS_ROUTE) { inclusive = true }
+                    }
+                },
                 onCreateDeposit = { navController.navigate("createDeposit/$goalId") },
                 onEditDeposit = { depositId -> navController.navigate("editDeposit/$goalId/$depositId") },
                 onDepositChanged = {

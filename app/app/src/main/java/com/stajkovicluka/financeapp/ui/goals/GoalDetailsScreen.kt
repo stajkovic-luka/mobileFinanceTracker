@@ -1,7 +1,10 @@
 package com.stajkovicluka.financeapp.ui.goals
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,8 +12,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.stajkovicluka.financeapp.R
 import com.stajkovicluka.financeapp.data.model.Deposit
 import com.stajkovicluka.financeapp.data.model.Goal
+import com.stajkovicluka.financeapp.util.formatAmount
 import com.stajkovicluka.financeapp.viewmodel.GoalDetailsViewModel
 
 // Prikazuje detalje jednog cilja i listu njegovih uplata.
@@ -40,6 +48,8 @@ fun GoalDetailsScreen(
     onBack: () -> Unit,
     onEditGoal: () -> Unit,
     onGoalDeleted: () -> Unit,
+    onGoalArchived: () -> Unit,
+    onGoalUnarchived: () -> Unit,
     onCreateDeposit: () -> Unit,
     onEditDeposit: (Long) -> Unit,
     onDepositChanged: () -> Unit
@@ -60,6 +70,12 @@ fun GoalDetailsScreen(
                 onDeleteGoal = {
                     goalDetailsViewModel.deleteGoal(goalId, onGoalDeleted)
                 },
+                onArchiveGoal = {
+                    goalDetailsViewModel.archiveGoal(goalId, onGoalArchived)
+                },
+                onUnarchiveGoal = {
+                    goalDetailsViewModel.unarchiveGoal(goalId, onGoalUnarchived)
+                },
                 onCreateDeposit = onCreateDeposit,
                 onEditDeposit = onEditDeposit,
                 onDeleteDeposit = { depositId ->
@@ -77,6 +93,8 @@ private fun DetailsContent(
     onBack: () -> Unit,
     onEditGoal: () -> Unit,
     onDeleteGoal: () -> Unit,
+    onArchiveGoal: () -> Unit,
+    onUnarchiveGoal: () -> Unit,
     onCreateDeposit: () -> Unit,
     onEditDeposit: (Long) -> Unit,
     onDeleteDeposit: (Long) -> Unit
@@ -84,6 +102,7 @@ private fun DetailsContent(
     var showDeleteGoalDialog by remember { mutableStateOf(false) }
     var depositToDelete by remember { mutableStateOf<Deposit?>(null) }
     var newestFirst by rememberSaveable { mutableStateOf(true) }
+    val isArchived = goal.status == "ARCHIVED"
     val sortedDeposits = if (newestFirst) {
         deposits.sortedByDescending { it.createdAt }
     } else {
@@ -93,6 +112,9 @@ private fun DetailsContent(
     if (showDeleteGoalDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteGoalDialog = false },
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSurface,
             title = { Text(stringResource(R.string.delete_goal_title)) },
             text = { Text(stringResource(R.string.delete_goal_message)) },
             confirmButton = {
@@ -114,6 +136,9 @@ private fun DetailsContent(
     depositToDelete?.let { deposit ->
         AlertDialog(
             onDismissRequest = { depositToDelete = null },
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSurface,
             title = { Text(stringResource(R.string.delete_deposit_title)) },
             text = { Text(stringResource(R.string.delete_deposit_message)) },
             confirmButton = {
@@ -136,7 +161,7 @@ private fun DetailsContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
             TextButton(onClick = onBack) {
@@ -147,11 +172,47 @@ private fun DetailsContent(
             GoalSummary(goal)
         }
         item {
-            Column {
-                TextButton(onClick = onEditGoal) {
-                    Text(stringResource(R.string.edit_goal_button))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (isArchived) {
+                    OutlinedButton(
+                        onClick = onUnarchiveGoal,
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        ),
+                        border = BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    ) {
+                        Text(stringResource(R.string.unarchive_goal_button))
+                    }
+                } else {
+                    Button(onClick = onEditGoal) {
+                        Text(stringResource(R.string.edit_goal_button))
+                    }
+                    OutlinedButton(
+                        onClick = onArchiveGoal,
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        ),
+                        border = BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    ) {
+                        Text(stringResource(R.string.archive_goal_button))
+                    }
                 }
-                TextButton(onClick = { showDeleteGoalDialog = true }) {
+                OutlinedButton(
+                    onClick = { showDeleteGoalDialog = true },
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    ),
+                    border = BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.error
+                    )
+                ) {
                     Text(stringResource(R.string.delete_goal_button))
                 }
             }
@@ -164,13 +225,18 @@ private fun DetailsContent(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 12.dp)
                 )
-                Button(
-                    onClick = onCreateDeposit,
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Text(stringResource(R.string.create_deposit_button))
+                if (!isArchived) {
+                    Button(
+                        onClick = onCreateDeposit,
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Text(stringResource(R.string.create_deposit_button))
+                    }
                 }
-                TextButton(onClick = { newestFirst = !newestFirst }) {
+                TextButton(
+                    onClick = { newestFirst = !newestFirst },
+                    contentPadding = PaddingValues(vertical = 8.dp)
+                ) {
                     val sortOrder = if (newestFirst) {
                         R.string.sort_newest_first
                     } else {
@@ -191,6 +257,7 @@ private fun DetailsContent(
             items(sortedDeposits, key = { it.id }) { deposit ->
                 DepositCard(
                     deposit = deposit,
+                    isArchived = isArchived,
                     onEdit = { onEditDeposit(deposit.id) },
                     onDelete = { depositToDelete = deposit }
                 )
@@ -209,45 +276,85 @@ private fun GoalSummary(goal: Goal) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${goal.currentAmount} / ${goal.targetAmount}",
+                text = stringResource(
+                    R.string.goal_amount_progress,
+                    formatAmount(goal.currentAmount),
+                    formatAmount(goal.targetAmount)
+                ),
                 modifier = Modifier.padding(top = 8.dp)
             )
-            Text(
-                text = "Napredak: ${goal.progressPct}%",
-                modifier = Modifier.padding(top = 4.dp)
+            LinearProgressIndicator(
+                progress = {
+                    (goal.progressPct.toFloat() / 100f).coerceIn(0f, 1f)
+                },
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.14f),
+                gapSize = 0.dp,
+                drawStopIndicator = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
             )
-            Text(text = goal.status, modifier = Modifier.padding(top = 4.dp))
-            goal.deadline?.let { deadline ->
-                Text(
-                    text = "Rok: ${formatDate(deadline)}",
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
+            GoalStatus(status = goal.status, modifier = Modifier.padding(top = 4.dp))
+            val deadlineText = goal.deadline?.let { deadline ->
+                stringResource(R.string.deadline_value, formatDate(deadline))
+            } ?: stringResource(R.string.deadline_not_set)
+            Text(text = deadlineText, modifier = Modifier.padding(top = 4.dp))
         }
     }
 }
 
 @Composable
-private fun DepositCard(deposit: Deposit, onEdit: () -> Unit, onDelete: () -> Unit) {
+private fun DepositCard(
+    deposit: Deposit,
+    isArchived: Boolean,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
     Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Text(
-                text = deposit.amount.toString(),
+                text = stringResource(R.string.amount_with_currency, formatAmount(deposit.amount)),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.16f)
+            )
             Text(
-                text = formatDate(deposit.createdAt),
-                modifier = Modifier.padding(top = 4.dp)
+                text = stringResource(R.string.deposit_date, formatDate(deposit.createdAt)),
+                style = MaterialTheme.typography.bodyMedium
             )
             deposit.note?.takeIf { it.isNotBlank() }?.let { note ->
-                Text(text = note, modifier = Modifier.padding(top = 4.dp))
+                Text(
+                    text = stringResource(R.string.deposit_note, note),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
-            TextButton(onClick = onEdit) {
-                Text(stringResource(R.string.edit_deposit_button))
-            }
-            TextButton(onClick = onDelete) {
-                Text(stringResource(R.string.delete_deposit_button))
+            if (!isArchived) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(
+                        onClick = onEdit,
+                        colors = ButtonDefaults.outlinedButtonColors()
+                    ) {
+                        Text(stringResource(R.string.edit_deposit_button))
+                    }
+                    OutlinedButton(
+                        onClick = onDelete,
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.error
+                        ),
+                        border = BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text(stringResource(R.string.delete_deposit_button))
+                    }
+                }
             }
         }
     }

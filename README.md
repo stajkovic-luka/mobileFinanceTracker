@@ -8,19 +8,19 @@ A mobile application for tracking personal savings goals — set a target, log d
 
 ## About
 
-SQRL is a personal project that helps users stay on top of their savings. Define a goal (e.g. "New laptop — €1,000"), log deposits toward it over time, and follow your progress at a glance. The project consists of a REST API backend and a native Android client (in development).
+SQRL is a personal project that helps users stay on top of their savings. Define a goal (e.g. "New laptop — €1,000"), log deposits toward it over time, and follow your progress at a glance. The project consists of a REST API backend and a native Android client.
 
 ## Features
 
 - User registration and login with JWT authentication
 - Savings goals CRUD: create, list, view, partially update and delete
+- Goal archiving — an archived goal stays available for review but is read-only
 - Deposits CRUD for a specific savings goal
 - Automatic update of a goal's current amount, progress percentage and status after a deposit is created, updated or deleted
 - Data access limited to the authenticated user's own goals and deposits
 - Deposit reports with date filters
 - File logging with automatic rotation
-- Charts — *planned*
-- Native Android client — Compose navigation, welcome screen and login with JWT storage
+- Native Android client — registration and login, goals and deposits with full CRUD, goal archiving, reports with daily and monthly charts, PDF report export, and light/dark/system theme
 
 ## Tech Stack
 
@@ -33,13 +33,12 @@ SQRL is a personal project that helps users stay on top of their savings. Define
 ![Flyway](https://img.shields.io/badge/Flyway-Migrations-CC0202?logo=flyway&logoColor=white)
 ![Spring Data JPA](https://img.shields.io/badge/Spring_Data_JPA-Hibernate-6DB33F?logo=hibernate&logoColor=white)
 
-**Mobile** *(in development)*
+**Mobile**
 
 ![Android](https://img.shields.io/badge/Android-Native-3DDC84?logo=android&logoColor=white)
 ![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-Material_3-4285F4?logo=jetpackcompose&logoColor=white)
 ![Retrofit](https://img.shields.io/badge/Retrofit-HTTP_client-3DDC84)
-
-**Charts & reporting** *(planned)* — Vico is the library of choice
+![Vico](https://img.shields.io/badge/Vico-Charts-3DDC84)
 
 ## Getting Started
 
@@ -90,15 +89,13 @@ Run backend tests with:
 5. Set `BASE_URL` in `app/app/src/main/java/com/stajkovicluka/financeapp/data/api/ApiClient.kt` to the computer's local IP address and backend port, for example `http://192.168.1.10:8080/`.
 6. Run the `app` configuration.
 
-The current Android client supports the Welcome → Login flow. A successful login stores the returned JWT locally; authenticated goal and deposit requests will be added in the following increments.
+The Android client covers the full flow: registration and login with local JWT storage, goals and deposits with full CRUD, goal archiving, and reports with charts and PDF export.
 
 ## Project Structure
 
 ```
-mobileFinanceApp/
 ├── backend/   # Spring Boot REST API
 ├── app/       # Android client (Jetpack Compose)
-├── docs/      # Documentation
 └── postman/   # API collection and environment template
 ```
 
@@ -119,6 +116,8 @@ Authorization: Bearer <JWT_TOKEN>
 | GET | `/goals` | Lists the authenticated user's goals |
 | GET | `/goals/{goalId}` | Returns one of the authenticated user's goals |
 | PATCH | `/goals/{goalId}` | Updates one or more fields of a goal |
+| PATCH | `/goals/{goalId}/archive` | Archives a goal — it becomes read-only until restored |
+| PATCH | `/goals/{goalId}/unarchive` | Restores an archived goal and recalculates its status |
 | DELETE | `/goals/{goalId}` | Deletes a goal and its deposits |
 | POST | `/goals/{goalId}/deposits` | Creates a deposit for a goal |
 | GET | `/goals/{goalId}/deposits` | Lists deposits for a goal, oldest first |

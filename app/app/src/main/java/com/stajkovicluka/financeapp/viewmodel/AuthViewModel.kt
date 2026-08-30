@@ -43,7 +43,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     fun login(onSuccess: () -> Unit) {
         if (username.isBlank() || password.isBlank()) {
-            errorMessage = "Unesite username i sifru."
+            errorMessage = "Unesite username i šifru."
             return
         }
 
@@ -64,14 +64,14 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 onSuccess()
             } catch (exception: HttpException) {
                 errorMessage = if (exception.code() == 401) {
-                    "Pogresan username ili sifra."
+                    "Pogrešan username ili šifra."
                 } else {
                     "Prijava trenutno nije uspela."
                 }
             } catch (exception: IOException) {
-                errorMessage = "Nije moguce povezati se sa backend-om."
+                errorMessage = "Nije moguće povezati se sa backend-om."
             } catch (exception: Exception) {
-                errorMessage = "Doslo je do neocekivane greske."
+                errorMessage = "Došlo je do neočekivane greške."
             } finally {
                 isLoading = false
             }
@@ -96,7 +96,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         if (registerPassword != confirmPassword) {
-            errorMessage = "Sifre se ne poklapaju."
+            errorMessage = "Šifre se ne poklapaju."
             return
         }
 
@@ -127,9 +127,9 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                     "Registracija trenutno nije uspela."
                 }
             } catch (exception: IOException) {
-                errorMessage = "Nije moguce povezati se sa backend-om."
+                errorMessage = "Nije moguće povezati se sa backend-om."
             } catch (exception: Exception) {
-                errorMessage = "Doslo je do neocekivane greske."
+                errorMessage = "Došlo je do neočekivane greške."
             } finally {
                 isLoading = false
             }

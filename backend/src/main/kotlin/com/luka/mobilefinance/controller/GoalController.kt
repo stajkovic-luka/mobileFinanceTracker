@@ -50,6 +50,20 @@ class GoalController(private val goalService: GoalService) {
         @Valid @RequestBody request: UpdateGoalRequest
     ): GoalResponse = goalService.updateGoal(username, goalId, request)
 
+    // Arhivira cilj prijavljenog korisnika bez brisanja njegovih podataka.
+    @PatchMapping("/{goalId}/archive")
+    fun archiveGoal(
+        @RequestAttribute("username") username: String,
+        @PathVariable goalId: Long
+    ): GoalResponse = goalService.archiveGoal(username, goalId)
+
+    // Vraca arhivirani cilj medju aktivne ciljeve korisnika.
+    @PatchMapping("/{goalId}/unarchive")
+    fun unarchiveGoal(
+        @RequestAttribute("username") username: String,
+        @PathVariable goalId: Long
+    ): GoalResponse = goalService.unarchiveGoal(username, goalId)
+
     // Brise cilj prijavljenog korisnika i njegove uplate preko database cascade pravila.
     @DeleteMapping("/{goalId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

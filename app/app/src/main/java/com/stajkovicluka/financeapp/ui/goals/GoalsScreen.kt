@@ -2,6 +2,7 @@ package com.stajkovicluka.financeapp.ui.goals
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,6 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.stajkovicluka.financeapp.R
 import com.stajkovicluka.financeapp.data.model.Goal
+import com.stajkovicluka.financeapp.ui.theme.Green
+import com.stajkovicluka.financeapp.util.formatAmount
 import com.stajkovicluka.financeapp.viewmodel.GoalsViewModel
 
 // Prikazuje listu ciljeva prijavljenog korisnika.
@@ -57,17 +60,24 @@ private fun GoalsList(
     onGoalClick: (Long) -> Unit
 ) {
     var newestFirst by rememberSaveable { mutableStateOf(true) }
-    val sortedGoals = if (newestFirst) {
-        goals.sortedByDescending { it.createdAt }
+    val archivedGoals = goals.filter { it.status == "ARCHIVED" }
+    val completedGoals = goals.filter { it.status == "COMPLETED" }
+    val goalsToSort = goals.filter { it.status != "COMPLETED" && it.status != "ARCHIVED" }
+    val goalsSortedByCreatedAt = if (newestFirst) {
+        goalsToSort.sortedByDescending { it.createdAt }
     } else {
-        goals.sortedBy { it.createdAt }
+        goalsToSort.sortedBy { it.createdAt }
     }
+    val sortedGoals = goalsSortedByCreatedAt.filter { it.deadline != null } +
+        goalsSortedByCreatedAt.filter { it.deadline == null } +
+        completedGoals +
+        archivedGoals
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
             Column {
@@ -76,7 +86,10 @@ private fun GoalsList(
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
-                TextButton(onClick = { newestFirst = !newestFirst }) {
+                TextButton(
+                    onClick = { newestFirst = !newestFirst },
+                    contentPadding = PaddingValues(vertical = 8.dp)
+                ) {
                     val sortOrder = if (newestFirst) {
                         R.string.sort_newest_first
                     } else {
@@ -122,29 +135,58 @@ private fun GoalCard(goal: Goal, onGoalClick: (Long) -> Unit) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${goal.currentAmount} / ${goal.targetAmount}",
+                text = stringResource(
+                    R.string.goal_amount_progress,
+                    formatAmount(goal.currentAmount),
+                    formatAmount(goal.targetAmount)
+                ),
                 modifier = Modifier.padding(top = 8.dp)
             )
             LinearProgressIndicator(
                 progress = {
                     (goal.progressPct.toFloat() / 100f).coerceIn(0f, 1f)
                 },
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.14f),
+                gapSize = 0.dp,
+                drawStopIndicator = {},
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp)
             )
+            GoalStatus(status = goal.status, modifier = Modifier.padding(top = 4.dp))
+            val deadlineText = goal.deadline?.let { deadline ->
+                stringResource(R.string.deadline_value, formatDate(deadline))
+            } ?: stringResource(R.string.deadline_not_set)
             Text(
-                text = goal.status,
+                text = deadlineText,
                 modifier = Modifier.padding(top = 4.dp)
             )
-            goal.deadline?.let { deadline ->
-                Text(
-                    text = "Rok: $deadline",
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
         }
     }
+}
+
+private fun formatDate(date: String): String {
+    val parts = date.substringBefore("T").split("-")
+    return if (parts.size == 3) "${parts[2]}.${parts[1]}.${parts[0]}" else date
+}
+
+// Prikazuje status cilja sa bojom koja odgovara njegovom stanju.
+@Composable
+fun GoalStatus(status: String, modifier: Modifier = Modifier) {
+    val statusColor = when (status) {
+        "ACTIVE" -> Green
+        "COMPLETED" -> MaterialTheme.colorScheme.primary
+        "ARCHIVED" -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        else -> MaterialTheme.colorScheme.onSurface
+    }
+
+    Text(
+        text = status,
+        color = statusColor,
+        fontWeight = FontWeight.Bold,
+        modifier = modifier
+    )
 }
 
 @Composable

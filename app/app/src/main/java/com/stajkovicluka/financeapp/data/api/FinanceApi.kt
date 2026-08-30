@@ -76,6 +76,18 @@ interface FinanceApi {
         @Body request: UpdateGoalRequest
     ): Goal
 
+    @PATCH("goals/{goalId}/archive")
+    suspend fun archiveGoal(
+        @Header("Authorization") authorization: String,
+        @retrofit2.http.Path("goalId") goalId: Long
+    ): Goal
+
+    @PATCH("goals/{goalId}/unarchive")
+    suspend fun unarchiveGoal(
+        @Header("Authorization") authorization: String,
+        @retrofit2.http.Path("goalId") goalId: Long
+    ): Goal
+
     @DELETE("goals/{goalId}")
     suspend fun deleteGoal(
         @Header("Authorization") authorization: String,

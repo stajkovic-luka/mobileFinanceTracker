@@ -47,16 +47,16 @@ class GoalDetailsViewModel(application: Application) : AndroidViewModel(applicat
                 deposits = depositsRepository.getDeposits(token, goalId)
             } catch (exception: HttpException) {
                 errorMessage = if (exception.code() == 404) {
-                    "Cilj nije pronadjen."
+                    "Cilj nije pronađen."
                 } else if (exception.code() == 401) {
                     "Prijava je istekla."
                 } else {
                     "Detalji cilja trenutno nisu dostupni."
                 }
             } catch (exception: IOException) {
-                errorMessage = "Nije moguce povezati se sa backend-om."
+                errorMessage = "Nije moguće povezati se sa backend-om."
             } catch (exception: Exception) {
-                errorMessage = "Doslo je do neocekivane greske."
+                errorMessage = "Došlo je do neočekivane greške."
             } finally {
                 isLoading = false
             }
@@ -71,7 +71,7 @@ class GoalDetailsViewModel(application: Application) : AndroidViewModel(applicat
     ) {
         val amount = amountText.replace(',', '.').toBigDecimalOrNull()
         if (amount == null || amount <= BigDecimal.ZERO) {
-            errorMessage = "Unesite iznos veci od nule."
+            errorMessage = "Unesite iznos veći od nule."
             return
         }
 
@@ -96,12 +96,12 @@ class GoalDetailsViewModel(application: Application) : AndroidViewModel(applicat
                 errorMessage = if (exception.code() == 400) {
                     "Proverite unete podatke."
                 } else {
-                    "Uplatu trenutno nije moguce sacuvati."
+                    "Uplatu trenutno nije moguće sačuvati."
                 }
             } catch (exception: IOException) {
-                errorMessage = "Nije moguce povezati se sa backend-om."
+                errorMessage = "Nije moguće povezati se sa backend-om."
             } catch (exception: Exception) {
-                errorMessage = "Doslo je do neocekivane greske."
+                errorMessage = "Došlo je do neočekivane greške."
             } finally {
                 isLoading = false
             }
@@ -117,7 +117,7 @@ class GoalDetailsViewModel(application: Application) : AndroidViewModel(applicat
     ) {
         val amount = amountText.replace(',', '.').toBigDecimalOrNull()
         if (amount == null || amount <= BigDecimal.ZERO) {
-            errorMessage = "Unesite iznos veci od nule."
+            errorMessage = "Unesite iznos veći od nule."
             return
         }
 
@@ -143,12 +143,12 @@ class GoalDetailsViewModel(application: Application) : AndroidViewModel(applicat
                 errorMessage = if (exception.code() == 400) {
                     "Proverite unete podatke."
                 } else {
-                    "Uplatu trenutno nije moguce izmeniti."
+                    "Uplatu trenutno nije moguće izmeniti."
                 }
             } catch (exception: IOException) {
-                errorMessage = "Nije moguce povezati se sa backend-om."
+                errorMessage = "Nije moguće povezati se sa backend-om."
             } catch (exception: Exception) {
-                errorMessage = "Doslo je do neocekivane greske."
+                errorMessage = "Došlo je do neočekivane greške."
             } finally {
                 isLoading = false
             }
@@ -170,11 +170,11 @@ class GoalDetailsViewModel(application: Application) : AndroidViewModel(applicat
                 depositsRepository.deleteDeposit(token, goalId, depositId)
                 onSuccess()
             } catch (exception: HttpException) {
-                errorMessage = "Uplatu trenutno nije moguce obrisati."
+                errorMessage = "Uplatu trenutno nije moguće obrisati."
             } catch (exception: IOException) {
-                errorMessage = "Nije moguce povezati se sa backend-om."
+                errorMessage = "Nije moguće povezati se sa backend-om."
             } catch (exception: Exception) {
-                errorMessage = "Doslo je do neocekivane greske."
+                errorMessage = "Došlo je do neočekivane greške."
             } finally {
                 isLoading = false
             }
@@ -194,7 +194,7 @@ class GoalDetailsViewModel(application: Application) : AndroidViewModel(applicat
             return
         }
         if (targetAmount == null || targetAmount <= BigDecimal.ZERO) {
-            errorMessage = "Unesite ciljani iznos veci od nule."
+            errorMessage = "Unesite ciljani iznos veći od nule."
             return
         }
 
@@ -219,12 +219,12 @@ class GoalDetailsViewModel(application: Application) : AndroidViewModel(applicat
                 errorMessage = if (exception.code() == 400) {
                     "Proverite unete podatke."
                 } else {
-                    "Cilj trenutno nije moguce izmeniti."
+                    "Cilj trenutno nije moguće izmeniti."
                 }
             } catch (exception: IOException) {
-                errorMessage = "Nije moguce povezati se sa backend-om."
+                errorMessage = "Nije moguće povezati se sa backend-om."
             } catch (exception: Exception) {
-                errorMessage = "Doslo je do neocekivane greske."
+                errorMessage = "Došlo je do neočekivane greške."
             } finally {
                 isLoading = false
             }
@@ -246,11 +246,67 @@ class GoalDetailsViewModel(application: Application) : AndroidViewModel(applicat
                 goalsRepository.deleteGoal(token, goalId)
                 onSuccess()
             } catch (exception: HttpException) {
-                errorMessage = "Cilj trenutno nije moguce obrisati."
+                errorMessage = "Cilj trenutno nije moguće obrisati."
             } catch (exception: IOException) {
-                errorMessage = "Nije moguce povezati se sa backend-om."
+                errorMessage = "Nije moguće povezati se sa backend-om."
             } catch (exception: Exception) {
-                errorMessage = "Doslo je do neocekivane greske."
+                errorMessage = "Došlo je do neočekivane greške."
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun archiveGoal(goalId: Long, onSuccess: () -> Unit) {
+        val token = tokenManager.getToken()
+        if (token == null) {
+            errorMessage = "Nema aktivne prijave."
+            return
+        }
+
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            try {
+                goalsRepository.archiveGoal(token, goalId)
+                onSuccess()
+            } catch (exception: HttpException) {
+                errorMessage = if (exception.code() == 404) {
+                    "Arhiviranje nije dostupno na pokrenutom backend-u."
+                } else {
+                    "Cilj trenutno nije moguće arhivirati."
+                }
+            } catch (exception: IOException) {
+                errorMessage = "Nije moguće povezati se sa backend-om."
+            } catch (exception: Exception) {
+                errorMessage = "Došlo je do neočekivane greške."
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun unarchiveGoal(goalId: Long, onSuccess: () -> Unit) {
+        val token = tokenManager.getToken()
+        if (token == null) {
+            errorMessage = "Nema aktivne prijave."
+            return
+        }
+
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            try {
+                goalsRepository.unarchiveGoal(token, goalId)
+                onSuccess()
+            } catch (exception: HttpException) {
+                errorMessage = "Cilj trenutno nije moguće vratiti iz arhive."
+            } catch (exception: IOException) {
+                errorMessage = "Nije moguće povezati se sa backend-om."
+            } catch (exception: Exception) {
+                errorMessage = "Došlo je do neočekivane greške."
             } finally {
                 isLoading = false
             }

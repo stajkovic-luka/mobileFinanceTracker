@@ -41,7 +41,7 @@ class ReportViewModel(application: Application) : AndroidViewModel(application) 
             return
         }
         if (from > to) {
-            errorMessage = "Pocetni datum ne moze biti posle krajnjeg datuma."
+            errorMessage = "Početni datum ne može biti posle krajnjeg datuma."
             return
         }
 
@@ -74,12 +74,12 @@ class ReportViewModel(application: Application) : AndroidViewModel(application) 
                 errorMessage = if (exception.code() == 400) {
                     "Proverite izabrani period."
                 } else {
-                    "Izvestaj trenutno nije dostupan."
+                    "Izveštaj trenutno nije dostupan."
                 }
             } catch (exception: IOException) {
-                errorMessage = "Nije moguce povezati se sa backend-om."
+                errorMessage = "Nije moguće povezati se sa backend-om."
             } catch (exception: Exception) {
-                errorMessage = "Doslo je do neocekivane greske."
+                errorMessage = "Došlo je do neočekivane greške."
             } finally {
                 isLoading = false
             }

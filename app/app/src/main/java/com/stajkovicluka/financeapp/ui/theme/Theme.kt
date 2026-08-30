@@ -17,20 +17,22 @@ private val LightColorScheme = lightColorScheme(
     background = Cream,
     onBackground = Charcoal,
     surface = Cream,
-    onSurface = Charcoal
+    onSurface = Charcoal,
+    surfaceContainerHighest = LightCard
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = LightOrange,
-    onPrimary = DarkBrown,
-    secondary = LightBrown,
-    onSecondary = DarkBrown,
+    primary = Orange,
+    onPrimary = Cream,
+    secondary = DarkNavigation,
+    onSecondary = Cream,
     tertiary = Yellow,
     onTertiary = DarkBrown,
     background = DarkBrown,
     onBackground = Cream,
     surface = DarkBrown,
-    onSurface = Cream
+    onSurface = Cream,
+    surfaceContainerHighest = DarkCard
 )
 
 @Composable

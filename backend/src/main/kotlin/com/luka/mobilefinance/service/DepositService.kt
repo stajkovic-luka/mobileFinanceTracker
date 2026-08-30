@@ -28,6 +28,7 @@ class DepositService(
     @Transactional
     fun createDeposit(username: String, goalId: Long, request: CreateDepositRequest): DepositResponse {
         val goal = findGoalForUser(username, goalId)
+        ensureGoalIsNotArchived(goal)
         val now = Date()
 
         val deposit = Deposit().apply {
@@ -60,6 +61,7 @@ class DepositService(
         request: UpdateDepositRequest
     ): DepositResponse {
         val goal = findGoalForUser(username, goalId)
+        ensureGoalIsNotArchived(goal)
         val deposit = findDepositForGoal(depositId, goal.id!!)
 
         if (request.amount == null && request.note == null) {
@@ -85,6 +87,7 @@ class DepositService(
     @Transactional
     fun deleteDeposit(username: String, goalId: Long, depositId: Long) {
         val goal = findGoalForUser(username, goalId)
+        ensureGoalIsNotArchived(goal)
         val deposit = findDepositForGoal(depositId, goal.id!!)
 
         depositRepo.delete(deposit)
@@ -104,6 +107,13 @@ class DepositService(
     private fun findDepositForGoal(depositId: Long, goalId: Long): Deposit {
         return depositRepo.findByIdAndGoalId(depositId, goalId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Deposit not found")
+    }
+
+    // Arhiviran cilj je samo za pregled, pa se njegove uplate ne mogu menjati.
+    private fun ensureGoalIsNotArchived(goal: Goal) {
+        if (goal.status == Status.ARCHIVED) {
+            throw ResponseStatusException(HttpStatus.CONFLICT, "Archived goal cannot be changed")
+        }
     }
 
     // Ponovo racuna zbir svih uplata da currentAmount uvek odgovara deposits tabeli.

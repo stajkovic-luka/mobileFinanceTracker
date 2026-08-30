@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.stajkovicluka.financeapp.R
+import com.stajkovicluka.financeapp.util.formatAmount
 import com.stajkovicluka.financeapp.data.model.DailyDepositTotal
 import com.stajkovicluka.financeapp.data.model.DepositReportItem
 import com.stajkovicluka.financeapp.data.model.DepositReportResponse
@@ -228,11 +229,11 @@ private fun ReportSummary(report: DepositReportResponse, averagePerGoal: BigDeci
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = stringResource(R.string.report_total_deposited, report.totalDeposited.toPlainString()),
+                text = stringResource(R.string.report_total_deposited, formatAmount(report.totalDeposited)),
                 modifier = Modifier.padding(top = 8.dp)
             )
             Text(
-                text = stringResource(R.string.report_average_per_goal, averagePerGoal.toPlainString()),
+                text = stringResource(R.string.report_average_per_goal, formatAmount(averagePerGoal)),
                 modifier = Modifier.padding(top = 4.dp)
             )
         }
@@ -314,7 +315,10 @@ private fun ReportDepositCard(deposit: DepositReportItem) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = deposit.goalName, style = MaterialTheme.typography.titleMedium)
-            Text(text = deposit.amount.toPlainString(), modifier = Modifier.padding(top = 4.dp))
+            Text(
+                text = stringResource(R.string.amount_with_currency, formatAmount(deposit.amount)),
+                modifier = Modifier.padding(top = 4.dp)
+            )
             Text(text = formatDate(deposit.createdAt), modifier = Modifier.padding(top = 4.dp))
             deposit.note?.takeIf { it.isNotBlank() }?.let { note ->
                 Text(text = note, modifier = Modifier.padding(top = 4.dp))

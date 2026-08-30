@@ -45,9 +45,9 @@ class GoalsViewModel(application: Application) : AndroidViewModel(application) {
                     "Ciljevi trenutno nisu dostupni."
                 }
             } catch (exception: IOException) {
-                errorMessage = "Nije moguce povezati se sa backend-om."
+                errorMessage = "Nije moguće povezati se sa backend-om."
             } catch (exception: Exception) {
-                errorMessage = "Doslo je do neocekivane greske."
+                errorMessage = "Došlo je do neočekivane greške."
             } finally {
                 isLoading = false
             }
@@ -64,7 +64,7 @@ class GoalsViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         if (targetAmount == null || targetAmount <= BigDecimal.ZERO) {
-            errorMessage = "Unesite iznos veci od nule."
+            errorMessage = "Unesite iznos veći od nule."
             return
         }
 
@@ -88,12 +88,12 @@ class GoalsViewModel(application: Application) : AndroidViewModel(application) {
                 errorMessage = if (exception.code() == 400) {
                     "Proverite unete podatke."
                 } else {
-                    "Cilj trenutno nije moguce sacuvati."
+                    "Cilj trenutno nije moguće sačuvati."
                 }
             } catch (exception: IOException) {
-                errorMessage = "Nije moguce povezati se sa backend-om."
+                errorMessage = "Nije moguće povezati se sa backend-om."
             } catch (exception: Exception) {
-                errorMessage = "Doslo je do neocekivane greske."
+                errorMessage = "Došlo je do neočekivane greške."
             } finally {
                 isLoading = false
             }

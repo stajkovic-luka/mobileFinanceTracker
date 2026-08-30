@@ -68,6 +68,8 @@ class GoalService(
         val goal = goalRepo.findByIdAndUserId(goalId, user.id!!)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Goal not found")
 
+        ensureGoalIsNotArchived(goal)
+
         if (request.name == null && request.targetAmount == null && request.deadline == null) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "At least one field must be provided")
         }
@@ -91,6 +93,42 @@ class GoalService(
         return toResponse(goalRepo.save(goal))
     }
 
+    // Menja status cilja u ARCHIVED, ali zadrzava cilj i njegove uplate za pregled.
+    fun archiveGoal(username: String, goalId: Long): GoalResponse {
+        val user = userRepo.findByUsername(username)
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User no longer exists")
+
+        val goal = goalRepo.findByIdAndUserId(goalId, user.id!!)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Goal not found")
+
+        goal.status = Status.ARCHIVED
+        goal.updatedAt = Date()
+
+        return toResponse(goalRepo.save(goal))
+    }
+
+    // Vraca cilj iz arhive i odredjuje njegov status prema trenutnom iznosu.
+    fun unarchiveGoal(username: String, goalId: Long): GoalResponse {
+        val user = userRepo.findByUsername(username)
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "User no longer exists")
+
+        val goal = goalRepo.findByIdAndUserId(goalId, user.id!!)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Goal not found")
+
+        if (goal.status != Status.ARCHIVED) {
+            throw ResponseStatusException(HttpStatus.CONFLICT, "Goal is not archived")
+        }
+
+        goal.status = if (goal.currentAmount >= goal.targetAmount) {
+            Status.COMPLETED
+        } else {
+            Status.ACTIVE
+        }
+        goal.updatedAt = Date()
+
+        return toResponse(goalRepo.save(goal))
+    }
+
     // Brise cilj samo ako pripada prijavljenom korisniku.
     fun deleteGoal(username: String, goalId: Long) {
         val user = userRepo.findByUsername(username)
@@ -100,6 +138,13 @@ class GoalService(
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Goal not found")
 
         goalRepo.delete(goal)
+    }
+
+    // Arhiviran cilj je samo za pregled, pa se vise ne moze menjati.
+    private fun ensureGoalIsNotArchived(goal: Goal) {
+        if (goal.status == Status.ARCHIVED) {
+            throw ResponseStatusException(HttpStatus.CONFLICT, "Archived goal cannot be changed")
+        }
     }
 
     // Pretvara entitet iz baze u odgovor koji saljemo mobilnoj aplikaciji.
