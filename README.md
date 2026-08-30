@@ -24,7 +24,7 @@ SQRL is a personal project that helps users stay on top of their savings. Define
 
 ## Tech Stack
 
-**Backend** *(current)*
+**Backend**
 
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.3.21-7F52FF?logo=kotlin&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1.0-6DB33F?logo=springboot&logoColor=white)
@@ -70,7 +70,7 @@ SQRL is a personal project that helps users stay on top of their savings. Define
 
 5. Verify it is running: open `http://localhost:8080/health` — it should return `{"status":"UP"}`.
 
-Flyway applies database migrations automatically on the first run. The current migrations create the `users`, `goals` and `deposits` tables and insert demo data.
+Flyway applies database migrations automatically on the first run. The current migrations create the `users`, `goals` and `deposits` tables and insert demo data for a showcase account — log in with `milos` / `milos123` to explore the app with six months of existing goals and deposits.
 
 Application logs are written to `backend/logs/backend.log` and automatically archived when they reach the configured size.
 
